@@ -1,0 +1,55 @@
+@model LMS.Models.Quiz
+@{
+    ViewData["Title"] = "Create Quiz";
+    var course = ViewBag.Course as LMS.Models.Course;
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center mb-4">
+                <a asp-action="ManageCourse" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary me-3">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h3 class="fw-bold mb-0">Create Quiz</h3>
+                    <small class="text-muted">@course?.Title</small>
+                </div>
+            </div>
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <form asp-action="CreateQuiz" method="post">
+                        <input type="hidden" asp-for="CourseId" />
+                        <div asp-validation-summary="All" class="alert alert-danger"></div>
+
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label fw-semibold"></label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label asp-for="Description" class="form-label fw-semibold"></label>
+                            <textarea asp-for="Description" class="form-control" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="PassingScore" class="form-label fw-semibold">Passing Score (%)</label>
+                                <input asp-for="PassingScore" class="form-control" type="number" min="1" max="100" />
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="TimeLimitMinutes" class="form-label fw-semibold">Time Limit (min)</label>
+                                <input asp-for="TimeLimitMinutes" class="form-control" type="number" min="1" />
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button type="submit" class="btn btn-warning">
+                                <i class="bi bi-plus-circle me-2"></i>Create Quiz
+                            </button>
+                            <a asp-action="ManageCourse" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

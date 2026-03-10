@@ -1,0 +1,94 @@
+@model LMS.Models.Quiz
+@{
+    ViewData["Title"] = "Manage Quiz: " + Model.Title;
+}
+
+<div class="container py-4">
+    <div class="d-flex align-items-center mb-4">
+        <a asp-action="ManageCourse" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary me-3">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <div>
+            <h3 class="fw-bold mb-0">@Model.Title</h3>
+            <small class="text-muted">@Model.Course?.Title</small>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <h5 class="fw-bold mb-3">Questions (@Model.Questions.Count)</h5>
+            @if (!Model.Questions.Any())
+            {
+                <div class="alert alert-info">No questions yet. Add your first question below.</div>
+            }
+            else
+            {
+                @foreach (var question in Model.Questions.OrderBy(q => q.Order))
+                {
+                    <div class="card mb-3 shadow-sm">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <h6 class="fw-semibold">Q@question.Order: @question.Text</h6>
+                                <div class="d-flex align-items-start gap-2">
+                                    <span class="badge bg-secondary">@question.Points pt@(question.Points != 1 ? "s" : "")</span>
+                                    <form asp-action="DeleteQuestion" method="post" class="d-inline">
+                                        <input type="hidden" name="id" value="@question.Id" />
+                                        <input type="hidden" name="quizId" value="@Model.Id" />
+                                        <button type="submit" class="btn btn-outline-danger btn-sm"
+                                                onclick="return confirm('Delete question?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                            <ul class="list-unstyled mb-0 mt-2">
+                                @foreach (var answer in question.Answers)
+                                {
+                                    <li class="@(answer.IsCorrect ? "text-success fw-semibold" : "text-muted") small">
+                                        <i class="bi bi-@(answer.IsCorrect ? "check-circle-fill" : "circle") me-2"></i>@answer.Text
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-3">Add Question</h5>
+                    <form asp-action="AddQuestion" method="post">
+                        <input type="hidden" name="quizId" value="@Model.Id" />
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Question</label>
+                            <textarea name="questionText" class="form-control" rows="3" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Points</label>
+                            <input type="number" name="points" class="form-control" value="1" min="1" max="10" />
+                        </div>
+
+                        <label class="form-label fw-semibold">Answers (check correct ones)</label>
+                        @for (int i = 0; i < 4; i++)
+                        {
+                            <div class="input-group mb-2">
+                                <div class="input-group-text">
+                                    <input type="checkbox" name="isCorrect" value="true" title="Is correct?" />
+                                </div>
+                                <input type="text" name="answers" class="form-control"
+                                       placeholder="Answer @(i + 1)" />
+                            </div>
+                        }
+                        <small class="text-muted d-block mb-3">Check the box for correct answers</small>
+
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="bi bi-plus me-1"></i>Add Question
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

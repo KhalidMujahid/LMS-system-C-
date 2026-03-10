@@ -1,0 +1,93 @@
+@model LMS.Models.Lesson
+@{
+    ViewData["Title"] = Model.Title;
+    bool isCompleted = ViewBag.IsCompleted;
+    var prevLesson = ViewBag.PreviousLesson as LMS.Models.Lesson;
+    var nextLesson = ViewBag.NextLesson as LMS.Models.Lesson;
+    var allLessons = ViewBag.AllLessons as List<LMS.Models.Lesson> ?? new();
+}
+
+<div class="container-fluid py-0">
+    <div class="row g-0" style="min-height: calc(100vh - 56px);">
+        <!-- Sidebar -->
+        <div class="col-lg-3 border-end bg-light p-0" style="max-height: calc(100vh - 56px); overflow-y: auto;">
+            <div class="p-3 border-bottom">
+                <small class="text-muted fw-bold text-uppercase">@Model.Course?.Title</small>
+            </div>
+            <div class="list-group list-group-flush">
+                @foreach (var lesson in allLessons)
+                {
+                    <a asp-action="Lesson" asp-route-id="@lesson.Id"
+                       class="list-group-item list-group-item-action py-2 @(lesson.Id == Model.Id ? "active" : "")">
+                        <small>@lesson.Order. @lesson.Title</small>
+                    </a>
+                }
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="col-lg-9 p-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <div>
+                    <span class="badge bg-secondary me-2">@Model.Type</span>
+                    <span class="text-muted small"><i class="bi bi-clock me-1"></i>@Model.DurationMinutes min</span>
+                </div>
+                @if (isCompleted)
+                {
+                    <span class="badge bg-success"><i class="bi bi-check-circle me-1"></i>Completed</span>
+                }
+            </div>
+
+            <h2 class="fw-bold mb-4">@Model.Title</h2>
+
+            @if (Model.Type == LMS.Models.LessonType.Video && !string.IsNullOrEmpty(Model.VideoUrl))
+            {
+                <div class="ratio ratio-16x9 mb-4">
+                    <iframe src="@Model.VideoUrl" allowfullscreen></iframe>
+                </div>
+            }
+
+            @if (!string.IsNullOrEmpty(Model.Content))
+            {
+                <div class="lesson-content">
+                    @Html.Raw(Model.Content?.Replace("\n", "<br />"))
+                </div>
+            }
+
+            <!-- Navigation & Complete -->
+            <div class="d-flex justify-content-between align-items-center mt-5 pt-4 border-top">
+                <div>
+                    @if (prevLesson != null)
+                    {
+                        <a asp-action="Lesson" asp-route-id="@prevLesson.Id" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left me-1"></i>Previous
+                        </a>
+                    }
+                </div>
+                <div class="d-flex gap-2">
+                    @if (!isCompleted)
+                    {
+                        <form asp-action="CompleteLesson" method="post">
+                            <input type="hidden" name="lessonId" value="@Model.Id" />
+                            <button type="submit" class="btn btn-success">
+                                <i class="bi bi-check-circle me-1"></i>Mark Complete
+                            </button>
+                        </form>
+                    }
+                    @if (nextLesson != null)
+                    {
+                        <a asp-action="Lesson" asp-route-id="@nextLesson.Id" class="btn btn-primary">
+                            Next <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-action="Learn" asp-route-id="@Model.CourseId" class="btn btn-primary">
+                            Back to Course <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

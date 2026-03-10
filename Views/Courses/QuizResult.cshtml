@@ -1,0 +1,67 @@
+@model LMS.Models.QuizAttempt
+@{
+    ViewData["Title"] = "Quiz Result";
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+            <div class="card shadow-sm text-center mb-4">
+                <div class="card-body p-5">
+                    @if (Model.Passed)
+                    {
+                        <div class="text-success mb-3"><i class="bi bi-trophy-fill" style="font-size:4rem;"></i></div>
+                        <h2 class="fw-bold text-success">Congratulations! 🎉</h2>
+                        <p class="lead">You passed the quiz!</p>
+                    }
+                    else
+                    {
+                        <div class="text-danger mb-3"><i class="bi bi-x-circle" style="font-size:4rem;"></i></div>
+                        <h2 class="fw-bold text-danger">Almost there!</h2>
+                        <p class="lead">You didn't pass this time. Keep studying and try again!</p>
+                    }
+                    <div class="display-3 fw-bold @(Model.Passed ? "text-success" : "text-danger")">
+                        @Model.Score%
+                    </div>
+                    <p class="text-muted">Pass score: @Model.Quiz?.PassingScore%</p>
+
+                    <div class="d-flex justify-content-center gap-3 mt-3">
+                        <a asp-controller="Courses" asp-action="Learn" asp-route-id="@Model.Quiz?.CourseId" class="btn btn-primary">
+                            <i class="bi bi-arrow-left me-1"></i>Back to Course
+                        </a>
+                        @if (!Model.Passed)
+                        {
+                            <a asp-controller="Courses" asp-action="TakeQuiz" asp-route-id="@Model.QuizId" class="btn btn-outline-primary">
+                                <i class="bi bi-arrow-repeat me-1"></i>Retry Quiz
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold mb-3">Answer Review</h5>
+            @foreach (var question in Model.Quiz?.Questions.OrderBy(q => q.Order) ?? Enumerable.Empty<LMS.Models.Question>())
+            {
+                var studentAnswer = Model.StudentAnswers.FirstOrDefault(sa => sa.QuestionId == question.Id);
+                var correct = question.Answers.FirstOrDefault(a => a.IsCorrect);
+                bool isRight = studentAnswer?.AnswerId == correct?.Id;
+
+                <div class="card mb-3 border-@(isRight ? "success" : "danger")">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between">
+                            <h6 class="fw-bold">@question.Text</h6>
+                            <span class="badge bg-@(isRight ? "success" : "danger")">@(isRight ? "Correct" : "Wrong")</span>
+                        </div>
+                        <p class="mb-1 small"><strong>Your answer:</strong>
+                            @(studentAnswer != null ? question.Answers.FirstOrDefault(a => a.Id == studentAnswer.AnswerId)?.Text : "Not answered")
+                        </p>
+                        @if (!isRight)
+                        {
+                            <p class="mb-0 small text-success"><strong>Correct answer:</strong> @correct?.Text</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

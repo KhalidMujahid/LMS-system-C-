@@ -1,0 +1,107 @@
+@model LMS.Models.Course
+@{
+    ViewData["Title"] = Model.Title;
+    bool isEnrolled = ViewBag.IsEnrolled;
+}
+
+<div class="bg-primary text-white py-4">
+    <div class="container">
+        @if (Model.Category != null)
+        {
+            <span class="badge bg-light text-primary mb-2">@Model.Category</span>
+        }
+        <h1 class="fw-bold">@Model.Title</h1>
+        <p class="lead mb-3">@Model.Description</p>
+        <div class="d-flex gap-4 small">
+            <span><i class="bi bi-person me-1"></i>@Model.Instructor?.FullName</span>
+            <span><i class="bi bi-book me-1"></i>@Model.LessonCount lessons</span>
+            <span><i class="bi bi-people me-1"></i>@Model.EnrollmentCount students</span>
+            <span><i class="bi bi-calendar me-1"></i>@Model.CreatedAt.ToString("MMM yyyy")</span>
+        </div>
+    </div>
+</div>
+
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8">
+            <h4 class="fw-bold">Course Content</h4>
+            @if (Model.Lessons.Any())
+            {
+                <div class="accordion mb-4" id="lessonsAccordion">
+                    @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
+                    {
+                        <div class="accordion-item">
+                            <div class="accordion-header">
+                                <div class="d-flex align-items-center p-3 gap-3">
+                                    <i class="bi bi-@(lesson.Type == LMS.Models.LessonType.Video ? "play-circle" : "file-text") text-primary"></i>
+                                    <span class="flex-grow-1">@lesson.Title</span>
+                                    <small class="text-muted">@lesson.DurationMinutes min</small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+
+            @if (Model.Quizzes.Any())
+            {
+                <h5 class="fw-bold mt-3"><i class="bi bi-patch-question me-2 text-warning"></i>Quizzes</h5>
+                @foreach (var quiz in Model.Quizzes)
+                {
+                    <div class="card mb-2">
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>@quiz.Title</strong>
+                                <small class="text-muted d-block">@quiz.Questions.Count questions • @quiz.TimeLimitMinutes min • Pass: @quiz.PassingScore%</small>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="col-lg-4">
+            <div class="card shadow-sm sticky-top" style="top: 80px;">
+                <div class="card-body p-4">
+                    @if (isEnrolled)
+                    {
+                        <div class="alert alert-success">
+                            <i class="bi bi-check-circle me-2"></i>You're enrolled!
+                        </div>
+                        <a asp-action="Learn" asp-route-id="@Model.Id" class="btn btn-success w-100 btn-lg">
+                            <i class="bi bi-play-circle me-2"></i>Continue Learning
+                        </a>
+                    }
+                    else
+                    {
+                        <h5 class="fw-bold text-center mb-3">Free Course</h5>
+                        @if (User.Identity!.IsAuthenticated)
+                        {
+                            <form asp-action="Enroll" method="post">
+                                <input type="hidden" name="courseId" value="@Model.Id" />
+                                <button type="submit" class="btn btn-primary w-100 btn-lg">
+                                    <i class="bi bi-plus-circle me-2"></i>Enroll Now
+                                </button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100 btn-lg">
+                                Login to Enroll
+                            </a>
+                        }
+                    }
+
+                    <hr />
+                    <h6 class="fw-bold">This course includes:</h6>
+                    <ul class="list-unstyled small">
+                        <li class="mb-2"><i class="bi bi-book text-primary me-2"></i>@Model.LessonCount lessons</li>
+                        <li class="mb-2"><i class="bi bi-patch-question text-warning me-2"></i>@Model.Quizzes.Count quizzes</li>
+                        <li class="mb-2"><i class="bi bi-trophy text-success me-2"></i>Completion certificate</li>
+                        <li><i class="bi bi-infinity text-info me-2"></i>Lifetime access</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

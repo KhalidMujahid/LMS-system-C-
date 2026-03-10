@@ -1,0 +1,58 @@
+@model IEnumerable<LMS.Models.Course>
+@{
+    ViewData["Title"] = "Manage Courses";
+}
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold">All Courses</h3>
+            <a asp-action="Index" class="text-muted small"><i class="bi bi-arrow-left me-1"></i>Back to Dashboard</a>
+        </div>
+        <span class="badge bg-secondary fs-6">@Model.Count() courses</span>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Title</th>
+                        <th>Instructor</th>
+                        <th>Category</th>
+                        <th>Status</th>
+                        <th>Students</th>
+                        <th>Created</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var course in Model)
+                    {
+                        <tr>
+                            <td class="align-middle fw-semibold">@course.Title</td>
+                            <td class="align-middle">@course.Instructor?.FullName</td>
+                            <td class="align-middle">@(course.Category ?? "-")</td>
+                            <td class="align-middle">
+                                <span class="badge @(course.Status == LMS.Models.CourseStatus.Published ? "bg-success" : course.Status == LMS.Models.CourseStatus.Draft ? "bg-warning text-dark" : "bg-secondary")">
+                                    @course.Status
+                                </span>
+                            </td>
+                            <td class="align-middle">@course.EnrollmentCount</td>
+                            <td class="align-middle text-muted small">@course.CreatedAt.ToString("MMM d, yyyy")</td>
+                            <td class="align-middle">
+                                <form asp-action="DeleteCourse" method="post" class="d-inline"
+                                      onsubmit="return confirm('Delete this course and all its content?')">
+                                    <input type="hidden" name="id" value="@course.Id" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
