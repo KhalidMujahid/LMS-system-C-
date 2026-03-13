@@ -3,91 +3,94 @@
     ViewData["Title"] = "Manage Quiz: " + Model.Title;
 }
 
-<div class="container py-4">
-    <div class="d-flex align-items-center mb-4">
-        <a asp-action="ManageCourse" asp-route-id="@Model.CourseId" class="btn btn-outline-secondary me-3">
-            <i class="bi bi-arrow-left"></i>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex items-center mb-6">
+        <a asp-action="ManageCourse" asp-route-id="@Model.CourseId" class="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors mr-3">
+            <i class="bi bi-arrow-left text-lg"></i>
         </a>
         <div>
-            <h3 class="fw-bold mb-0">@Model.Title</h3>
-            <small class="text-muted">@Model.Course?.Title</small>
+            <h2 class="text-2xl font-bold text-gray-900">@Model.Title</h2>
+            <p class="text-gray-500 text-sm">@Model.Course?.Title</p>
         </div>
     </div>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <h5 class="fw-bold mb-3">Questions (@Model.Questions.Count)</h5>
-            @if (!Model.Questions.Any())
-            {
-                <div class="alert alert-info">No questions yet. Add your first question below.</div>
-            }
-            else
-            {
-                @foreach (var question in Model.Questions.OrderBy(q => q.Order))
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Questions (@Model.Questions.Count)</h3>
+                
+                @if (!Model.Questions.Any())
                 {
-                    <div class="card mb-3 shadow-sm">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between">
-                                <h6 class="fw-semibold">Q@question.Order: @question.Text</h6>
-                                <div class="d-flex align-items-start gap-2">
-                                    <span class="badge bg-secondary">@question.Points pt@(question.Points != 1 ? "s" : "")</span>
-                                    <form asp-action="DeleteQuestion" method="post" class="d-inline">
-                                        <input type="hidden" name="id" value="@question.Id" />
-                                        <input type="hidden" name="quizId" value="@Model.Id" />
-                                        <button type="submit" class="btn btn-outline-danger btn-sm"
-                                                onclick="return confirm('Delete question?')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                            <ul class="list-unstyled mb-0 mt-2">
-                                @foreach (var answer in question.Answers)
-                                {
-                                    <li class="@(answer.IsCorrect ? "text-success fw-semibold" : "text-muted") small">
-                                        <i class="bi bi-@(answer.IsCorrect ? "check-circle-fill" : "circle") me-2"></i>@answer.Text
-                                    </li>
-                                }
-                            </ul>
-                        </div>
+                    <div class="bg-blue-50 border border-blue-200 text-blue-700 px-4 py-3 rounded-lg text-sm">
+                        No questions yet. Add your first question below.
                     </div>
                 }
-            }
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold mb-3">Add Question</h5>
-                    <form asp-action="AddQuestion" method="post">
-                        <input type="hidden" name="quizId" value="@Model.Id" />
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Question</label>
-                            <textarea name="questionText" class="form-control" rows="3" required></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold">Points</label>
-                            <input type="number" name="points" class="form-control" value="1" min="1" max="10" />
-                        </div>
-
-                        <label class="form-label fw-semibold">Answers (check correct ones)</label>
-                        @for (int i = 0; i < 4; i++)
+                else
+                {
+                    <div class="space-y-4">
+                        @foreach (var question in Model.Questions.OrderBy(q => q.Order))
                         {
-                            <div class="input-group mb-2">
-                                <div class="input-group-text">
-                                    <input type="checkbox" name="isCorrect" value="true" title="Is correct?" />
+                            <div class="border border-gray-200 rounded-lg p-4">
+                                <div class="flex items-start justify-between mb-3">
+                                    <h4 class="font-medium text-gray-900">Q@question.Order: @question.Text</h4>
+                                    <div class="flex items-center gap-2">
+                                        <span class="px-2 py-1 bg-gray-100 text-gray-600 text-xs font-medium rounded-full">@question.Points pt@(question.Points != 1 ? "s" : "")</span>
+                                        <form asp-action="DeleteQuestion" method="post" class="inline">
+                                            <input type="hidden" name="id" value="@question.Id" />
+                                            <input type="hidden" name="quizId" value="@Model.Id" />
+                                            <button type="submit" class="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                                                    onclick="return confirm('Delete question?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
                                 </div>
-                                <input type="text" name="answers" class="form-control"
-                                       placeholder="Answer @(i + 1)" />
+                                <ul class="space-y-2">
+                                    @foreach (var answer in question.Answers)
+                                    {
+                                        <li class="@(answer.IsCorrect ? "text-green-600 font-medium" : "text-gray-500") text-sm flex items-center">
+                                            <i class="bi bi-@(answer.IsCorrect ? "check-circle-fill" : "circle") mr-2"></i>@answer.Text
+                                        </li>
+                                    }
+                                </ul>
                             </div>
                         }
-                        <small class="text-muted d-block mb-3">Check the box for correct answers</small>
+                    </div>
+                }
+            </div>
+        </div>
 
-                        <button type="submit" class="btn btn-warning w-100">
-                            <i class="bi bi-plus me-1"></i>Add Question
-                        </button>
-                    </form>
-                </div>
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                <h3 class="text-lg font-bold text-gray-900 mb-4">Add Question</h3>
+                <form asp-action="AddQuestion" method="post">
+                    <input type="hidden" name="quizId" value="@Model.Id" />
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Question</label>
+                        <textarea name="questionText" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" rows="3" required></textarea>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Points</label>
+                        <input type="number" name="points" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors" value="1" min="1" max="10" />
+                    </div>
+
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Answers (check correct ones)</label>
+                    @for (int i = 0; i < 4; i++)
+                    {
+                        <div class="flex items-center mb-2">
+                            <input type="checkbox" name="isCorrect" value="true" class="w-4 h-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" title="Is correct?" />
+                            <input type="text" name="answers" class="flex-1 ml-2 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition-colors"
+                                   placeholder="Answer @(i + 1)" />
+                        </div>
+                    }
+                    <p class="text-gray-500 text-xs mb-4">Check the box for correct answers</p>
+
+                    <button type="submit" class="w-full px-4 py-2.5 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition-colors">
+                        <i class="bi bi-plus mr-1"></i>Add Question
+                    </button>
+                </form>
             </div>
         </div>
     </div>

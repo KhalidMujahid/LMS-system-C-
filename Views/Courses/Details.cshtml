@@ -1,43 +1,90 @@
 @model LMS.Models.Course
+@using LMS.Models
 @{
     ViewData["Title"] = Model.Title;
     bool isEnrolled = ViewBag.IsEnrolled;
+    bool isInCart = ViewBag.IsInCart;
+    var liveClasses = ViewBag.LiveClasses as List<LiveClass> ?? new List<LiveClass>();
+    var upcomingLiveClasses = liveClasses.Where(l => l.Status == LiveClassStatus.Scheduled || l.Status == LiveClassStatus.Live).ToList();
 }
 
-<div class="bg-primary text-white py-4">
-    <div class="container">
-        @if (Model.Category != null)
-        {
-            <span class="badge bg-light text-primary mb-2">@Model.Category</span>
-        }
-        <h1 class="fw-bold">@Model.Title</h1>
-        <p class="lead mb-3">@Model.Description</p>
-        <div class="d-flex gap-4 small">
-            <span><i class="bi bi-person me-1"></i>@Model.Instructor?.FullName</span>
-            <span><i class="bi bi-book me-1"></i>@Model.LessonCount lessons</span>
-            <span><i class="bi bi-people me-1"></i>@Model.EnrollmentCount students</span>
-            <span><i class="bi bi-calendar me-1"></i>@Model.CreatedAt.ToString("MMM yyyy")</span>
+@if (!string.IsNullOrEmpty(Model.ThumbnailUrl))
+{
+    <div class="relative h-64 md:h-80 overflow-hidden">
+        <img src="@Model.ThumbnailUrl" alt="@Model.Title" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-r from-primary-600/90 to-primary-800/80"></div>
+        <div class="absolute inset-0 flex items-center">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+                @if (Model.Category != null)
+                {
+                    <span class="inline-block px-3 py-1 bg-white/20 text-white text-sm font-medium rounded-full mb-4">@Model.Category</span>
+                }
+                <h1 class="text-3xl md:text-4xl font-bold mb-4 text-white">@Model.Title</h1>
+                <p class="text-white/80 text-lg mb-6 max-w-3xl">@Model.Description</p>
+                <div class="flex flex-wrap items-center gap-6 text-white/80">
+                    <span class="flex items-center">
+                        <i class="bi bi-person mr-2"></i>@Model.Instructor?.FullName
+                    </span>
+                    <span class="flex items-center">
+                        <i class="bi bi-book mr-2"></i>@Model.LessonCount lessons
+                    </span>
+                    <span class="flex items-center">
+                        <i class="bi bi-people mr-2"></i>@Model.EnrollmentCount students
+                    </span>
+                </div>
+            </div>
         </div>
     </div>
-</div>
+}
+else
+{
+    <div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            @if (Model.Category != null)
+            {
+                <span class="inline-block px-3 py-1 bg-white/20 text-white text-sm font-medium rounded-full mb-4">@Model.Category</span>
+            }
+            <h1 class="text-3xl md:text-4xl font-bold mb-4">@Model.Title</h1>
+            <p class="text-primary-100 text-lg mb-6 max-w-3xl">@Model.Description</p>
+            <div class="flex flex-wrap items-center gap-6 text-primary-100">
+                <span class="flex items-center">
+                    <i class="bi bi-person mr-2"></i>@Model.Instructor?.FullName
+                </span>
+                <span class="flex items-center">
+                    <i class="bi bi-book mr-2"></i>@Model.LessonCount lessons
+                </span>
+                <span class="flex items-center">
+                    <i class="bi bi-people mr-2"></i>@Model.EnrollmentCount students
+                </span>
+                <span class="flex items-center">
+                    <i class="bi bi-calendar mr-2"></i>@Model.CreatedAt.ToString("MMM yyyy")
+                </span>
+            </div>
+        </div>
+    </div>
+}
 
-<div class="container py-4">
-    <div class="row">
-        <div class="col-lg-8">
-            <h4 class="fw-bold">Course Content</h4>
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div class="lg:col-span-2">
+            <h2 class="text-2xl font-bold text-gray-900 mb-6">Course Content</h2>
+            
             @if (Model.Lessons.Any())
             {
-                <div class="accordion mb-4" id="lessonsAccordion">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden mb-6">
                     @foreach (var lesson in Model.Lessons.OrderBy(l => l.Order))
                     {
-                        <div class="accordion-item">
-                            <div class="accordion-header">
-                                <div class="d-flex align-items-center p-3 gap-3">
-                                    <i class="bi bi-@(lesson.Type == LMS.Models.LessonType.Video ? "play-circle" : "file-text") text-primary"></i>
-                                    <span class="flex-grow-1">@lesson.Title</span>
-                                    <small class="text-muted">@lesson.DurationMinutes min</small>
-                                </div>
+                        <div class="flex items-center p-4 border-b border-gray-100 last:border-b-0 hover:bg-gray-50 transition-colors">
+                            <div class="h-10 w-10 rounded-full flex items-center justify-center mr-4 @(lesson.Type == LMS.Models.LessonType.Video ? "bg-primary-100 text-primary-600" : "bg-amber-100 text-amber-600")">
+                                <i class="bi bi-@(lesson.Type == LMS.Models.LessonType.Video ? "play-circle" : "file-text")"></i>
                             </div>
+                            <div class="flex-1">
+                                <h4 class="font-medium text-gray-900">@lesson.Title</h4>
+                                <span class="text-sm text-gray-500">@lesson.DurationMinutes min</span>
+                            </div>
+                            <span class="text-sm text-gray-400">
+                                <i class="bi bi-@(lesson.Type == LMS.Models.LessonType.Video ? "play-circle-fill" : "file-earmark-text")"></i>
+                            </span>
                         </div>
                     }
                 </div>
@@ -45,62 +92,164 @@
 
             @if (Model.Quizzes.Any())
             {
-                <h5 class="fw-bold mt-3"><i class="bi bi-patch-question me-2 text-warning"></i>Quizzes</h5>
-                @foreach (var quiz in Model.Quizzes)
-                {
-                    <div class="card mb-2">
-                        <div class="card-body d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>@quiz.Title</strong>
-                                <small class="text-muted d-block">@quiz.Questions.Count questions • @quiz.TimeLimitMinutes min • Pass: @quiz.PassingScore%</small>
+                <h3 class="text-xl font-bold text-gray-900 mb-4">
+                    <i class="bi bi-patch-question mr-2 text-amber-500"></i>Quizzes
+                </h3>
+                <div class="space-y-3">
+                    @foreach (var quiz in Model.Quizzes)
+                    {
+                        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <h4 class="font-bold text-gray-900">@quiz.Title</h4>
+                                    <p class="text-sm text-gray-500">@quiz.Questions.Count questions • @quiz.TimeLimitMinutes min • Pass: @quiz.PassingScore%</p>
+                                </div>
                             </div>
                         </div>
+                    }
+                </div>
+            }
+            
+            @if (upcomingLiveClasses.Any())
+            {
+                <div class="mt-8">
+                    <h2 class="text-2xl font-bold text-gray-900 mb-6">
+                        <i class="bi bi-camera-video text-red-500 mr-2"></i>Live Classes
+                    </h2>
+                    <div class="space-y-4">
+                        @foreach (var liveClass in upcomingLiveClasses)
+                        {
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5 @(liveClass.Status == LiveClassStatus.Live ? "border-red-300 ring-2 ring-red-100" : "")">
+                                @if (liveClass.Status == LiveClassStatus.Live)
+                                {
+                                    <div class="flex items-center text-red-500 text-sm font-medium mb-2">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></span>
+                                        LIVE NOW
+                                    </div>
+                                }
+                                <h3 class="font-bold text-gray-900 text-lg">@liveClass.Title</h3>
+                                @if (!string.IsNullOrEmpty(liveClass.Description))
+                                {
+                                    <p class="text-gray-600 mt-1">@liveClass.Description</p>
+                                }
+                                <div class="flex flex-wrap items-center gap-4 mt-3 text-sm text-gray-500">
+                                    <span class="flex items-center">
+                                        <i class="bi bi-calendar3 mr-1"></i>@liveClass.ScheduledAt.ToString("MMM d, yyyy")
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="bi bi-clock mr-1"></i>@liveClass.ScheduledAt.ToString("h:mm tt")
+                                    </span>
+                                    <span class="flex items-center">
+                                        <i class="bi bi-hourglass-split mr-1"></i>@liveClass.DurationMinutes min
+                                    </span>
+                                </div>
+                                @if (isEnrolled)
+                                {
+                                    <a href="@Url.Action("Join", "LiveClass", new { id = liveClass.Id })" class="inline-flex items-center mt-4 px-4 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors">
+                                        @if (liveClass.Status == LiveClassStatus.Live)
+                                        {
+                                            <i class="bi bi-camera-video-fill mr-2"></i><span>Join Now</span>
+                                        }
+                                        else
+                                        {
+                                            <i class="bi bi-box-arrow-up-right mr-2"></i><span>Open</span>
+                                        }
+                                    </a>
+                                }
+                                else
+                                {
+                                    <p class="mt-3 text-sm text-gray-500">Enroll to join this live class</p>
+                                }
+                            </div>
+                        }
                     </div>
-                }
+                </div>
             }
         </div>
 
-        <div class="col-lg-4">
-            <div class="card shadow-sm sticky-top" style="top: 80px;">
-                <div class="card-body p-4">
-                    @if (isEnrolled)
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 p-6 sticky top-24">
+                <div class="text-center mb-4">
+                    @if (Model.Price > 0)
                     {
-                        <div class="alert alert-success">
-                            <i class="bi bi-check-circle me-2"></i>You're enrolled!
+                        <div class="text-3xl font-bold text-gray-900">
+                            @Model.PriceInNaira.ToString("₦#,##0.00")
                         </div>
-                        <a asp-action="Learn" asp-route-id="@Model.Id" class="btn btn-success w-100 btn-lg">
-                            <i class="bi bi-play-circle me-2"></i>Continue Learning
-                        </a>
+                        <p class="text-sm text-gray-500">One-time payment</p>
                     }
                     else
                     {
-                        <h5 class="fw-bold text-center mb-3">Free Course</h5>
-                        @if (User.Identity!.IsAuthenticated)
-                        {
-                            <form asp-action="Enroll" method="post">
-                                <input type="hidden" name="courseId" value="@Model.Id" />
-                                <button type="submit" class="btn btn-primary w-100 btn-lg">
-                                    <i class="bi bi-plus-circle me-2"></i>Enroll Now
-                                </button>
-                            </form>
-                        }
-                        else
-                        {
-                            <a asp-controller="Account" asp-action="Login" class="btn btn-primary w-100 btn-lg">
-                                Login to Enroll
-                            </a>
-                        }
+                        <div class="text-3xl font-bold text-green-600">
+                            Free
+                        </div>
+                        <p class="text-sm text-gray-500">No payment required</p>
                     }
-
-                    <hr />
-                    <h6 class="fw-bold">This course includes:</h6>
-                    <ul class="list-unstyled small">
-                        <li class="mb-2"><i class="bi bi-book text-primary me-2"></i>@Model.LessonCount lessons</li>
-                        <li class="mb-2"><i class="bi bi-patch-question text-warning me-2"></i>@Model.Quizzes.Count quizzes</li>
-                        <li class="mb-2"><i class="bi bi-trophy text-success me-2"></i>Completion certificate</li>
-                        <li><i class="bi bi-infinity text-info me-2"></i>Lifetime access</li>
-                    </ul>
                 </div>
+
+                @if (isEnrolled)
+                {
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4 mb-4 flex items-center">
+                        <i class="bi bi-check-circle text-green-600 text-xl mr-3"></i>
+                        <span class="text-green-800 font-medium">You're enrolled!</span>
+                    </div>
+                    <a asp-action="Learn" asp-route-id="@Model.Id" class="block w-full text-center py-3 px-4 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors">
+                        <i class="bi bi-play-circle mr-2"></i>Continue Learning
+                    </a>
+                }
+                else if (isInCart)
+                {
+                    <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-4 flex items-center">
+                        <i class="bi bi-cart text-amber-600 text-xl mr-3"></i>
+                        <span class="text-amber-800 font-medium">In your cart!</span>
+                    </div>
+                    <a asp-controller="Cart" asp-action="Index" class="block w-full text-center py-3 px-4 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 transition-colors">
+                        <i class="bi bi-cart mr-2"></i>View Cart
+                    </a>
+                }
+                else
+                {
+                    @if (User.Identity!.IsAuthenticated)
+                    {
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <input type="hidden" name="courseId" value="@Model.Id" />
+                            <button type="submit" class="w-full py-3 px-4 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors">
+                                <i class="bi bi-cart-plus mr-2"></i>Add to Cart
+                            </button>
+                        </form>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="block w-full text-center py-3 px-4 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors">
+                            Login to Enroll
+                        </a>
+                    }
+                }
+
+                <hr class="my-6 border-gray-200" />
+                
+                <h4 class="font-bold text-gray-900 mb-4">This course includes:</h4>
+                <ul class="space-y-3">
+                    <li class="flex items-center text-gray-600">
+                        <i class="bi bi-book text-primary-600 mr-3 text-lg"></i>
+                        @Model.LessonCount lessons
+                    </li>
+                    <li class="flex items-center text-gray-600">
+                        <i class="bi bi-patch-question text-amber-500 mr-3 text-lg"></i>
+                        @Model.Quizzes.Count quizzes
+                    </li>
+                    <li class="flex items-center text-gray-600">
+                        <i class="bi bi-trophy text-green-600 mr-3 text-lg"></i>
+                        Completion certificate
+                    </li>
+                    <li class="flex items-center text-gray-600">
+                        <i class="bi bi-infinity text-blue-600 mr-3 text-lg"></i>
+                        Lifetime access
+                    </li>
+                    <li class="flex items-center text-gray-600">
+                        <i class="bi bi-shield-check text-purple-600 mr-3 text-lg"></i>
+                        30-day money-back guarantee
+                    </li>
+                </ul>
             </div>
         </div>
     </div>

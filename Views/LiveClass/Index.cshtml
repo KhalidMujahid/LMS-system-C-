@@ -1,0 +1,125 @@
+@model IEnumerable<LMS.Models.LiveClass>
+@{
+    ViewData["Title"] = "Live Classes";
+    Layout = "_DashboardLayout";
+    var isInstructor = User.IsInRole("Instructor") || User.IsInRole("Admin");
+}
+
+<div class="space-y-6">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">Live Classes</h2>
+            <p class="text-gray-500 mt-1">@(isInstructor ? "Manage your live classes" : "Join live classes for your enrolled courses")</p>
+        </div>
+        @if (isInstructor)
+        {
+            <a asp-controller="Instructor" asp-action="Index" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors">
+                <i class="bi bi-plus-lg mr-2"></i>Schedule New Class
+            </a>
+        }
+    </div>
+
+    @if (!Model.Any())
+    {
+        <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <div class="mx-auto h-16 w-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <i class="bi bi-camera-video text-2xl text-gray-400"></i>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">No Live Classes</h3>
+            <p class="text-gray-500">@(isInstructor ? "You haven't scheduled any live classes yet." : "No live classes scheduled for your enrolled courses.")</p>
+            @if (!isInstructor)
+            {
+                <a asp-controller="Courses" asp-action="Index" class="inline-block mt-4 text-primary-600 hover:text-primary-700">Browse Courses</a>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var liveClass in Model)
+            {
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all">
+                    @if (liveClass.Status == LMS.Models.LiveClassStatus.Live)
+                    {
+                        <div class="bg-red-500 text-white px-4 py-2 text-sm font-medium flex items-center">
+                            <span class="w-2 h-2 bg-white rounded-full animate-pulse mr-2"></span>
+                            LIVE NOW
+                        </div>
+                    }
+                    else if (liveClass.Status == LMS.Models.LiveClassStatus.Scheduled)
+                    {
+                        <div class="bg-primary-500 text-white px-4 py-2 text-sm font-medium">
+                            Upcoming
+                        </div>
+                    }
+                    else if (liveClass.Status == LMS.Models.LiveClassStatus.Completed)
+                    {
+                        <div class="bg-gray-500 text-white px-4 py-2 text-sm font-medium">
+                            Completed
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="bg-amber-500 text-white px-4 py-2 text-sm font-medium">
+                            Cancelled
+                        </div>
+                    }
+
+                    <div class="p-5">
+                        <h3 class="font-semibold text-gray-900 mb-2 line-clamp-1">@liveClass.Title</h3>
+                        <p class="text-sm text-gray-500 mb-3">@liveClass.Course?.Title</p>
+
+                        <div class="space-y-2 mb-4">
+                            <div class="flex items-center text-sm text-gray-600">
+                                <i class="bi bi-calendar3 w-5"></i>
+                                <span>@liveClass.ScheduledAt.ToString("dddd, MMM d, yyyy")</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600">
+                                <i class="bi bi-clock w-5"></i>
+                                <span>@liveClass.ScheduledAt.ToString("h:mm tt") - @liveClass.ScheduledAt.AddMinutes(liveClass.DurationMinutes).ToString("h:mm tt")</span>
+                            </div>
+                            <div class="flex items-center text-sm text-gray-600">
+                                <i class="bi bi-hourglass-split w-5"></i>
+                                <span>@liveClass.DurationMinutes minutes</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            @if (liveClass.Status == LMS.Models.LiveClassStatus.Live)
+                            {
+                                <a asp-action="Join" asp-route-id="@liveClass.Id" class="flex-1 px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-lg hover:bg-red-700 transition-colors text-center">
+                                    <i class="bi bi-camera-video-fill mr-1"></i>Join Now
+                                </a>
+                            }
+                            else if (liveClass.Status == LMS.Models.LiveClassStatus.Scheduled)
+                            {
+                                <a asp-action="Join" asp-route-id="@liveClass.Id" class="flex-1 px-3 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors text-center">
+                                    <i class="bi bi-box-arrow-up-right mr-1"></i>Open
+                                </a>
+                            }
+                            else if (liveClass.Status == LMS.Models.LiveClassStatus.Completed && isInstructor)
+                            {
+                                <span class="flex-1 px-3 py-2 bg-gray-100 text-gray-500 text-sm font-medium rounded-lg text-center">
+                                    <i class="bi bi-check-circle mr-1"></i>Completed
+                                </span>
+                            }
+                            else
+                            {
+                                <span class="flex-1 px-3 py-2 bg-gray-100 text-gray-500 text-sm font-medium rounded-lg text-center">
+                                    Cancelled
+                                </span>
+                            }
+
+                            @if (isInstructor && liveClass.Status == LMS.Models.LiveClassStatus.Scheduled)
+                            {
+                                <a asp-action="Manage" asp-route-id="@liveClass.Id" class="px-3 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 transition-colors">
+                                    <i class="bi bi-gear"></i>
+                                </a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

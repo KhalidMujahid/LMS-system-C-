@@ -1,0 +1,121 @@
+@model IEnumerable<LMS.Models.LiveClass>
+@{
+    ViewData["Title"] = "My Live Classes";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-gray-50 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-8">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900">My Live Classes</h1>
+                <p class="mt-2 text-gray-600">Manage your scheduled live sessions</p>
+            </div>
+            <a href="/Instructor" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                </svg>
+                Create New
+            </a>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div class="flex items-center">
+                    <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+                    </svg>
+                    <p class="text-green-700">@TempData["Success"]</p>
+                </div>
+            </div>
+        }
+
+        @if (Model.Any())
+        {
+            <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+                @foreach (var liveClass in Model)
+                {
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                        <div class="px-4 py-3 border-b border-gray-100 flex items-center justify-between">
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium
+                                @(liveClass.Status == LMS.Models.LiveClassStatus.Live ? "bg-red-100 text-red-800" :
+                                  liveClass.Status == LMS.Models.LiveClassStatus.Scheduled ? "bg-blue-100 text-blue-800" :
+                                  liveClass.Status == LMS.Models.LiveClassStatus.Completed ? "bg-gray-100 text-gray-800" :
+                                  "bg-red-100 text-red-800")">
+                                @if (liveClass.Status == LMS.Models.LiveClassStatus.Live)
+                                {
+                                    <span class="w-2 h-2 bg-red-500 rounded-full mr-1.5 animate-pulse"></span>
+                                }
+                                @liveClass.Status
+                            </span>
+                            <span class="text-sm text-gray-500">@liveClass.Course?.Title</span>
+                        </div>
+
+                        <div class="p-5">
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">@liveClass.Title</h3>
+                            
+                            @if (!string.IsNullOrEmpty(liveClass.Description))
+                            {
+                                <p class="text-gray-600 text-sm mb-4 line-clamp-2">@liveClass.Description</p>
+                            }
+
+                            <div class="space-y-3">
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    @liveClass.ScheduledAt.ToString("dddd, MMMM d, yyyy")
+                                </div>
+                                <div class="flex items-center text-sm text-gray-600">
+                                    <svg class="w-4 h-4 mr-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                    </svg>
+                                    @liveClass.ScheduledAt.ToString("h:mm tt") - @liveClass.DurationMinutes minutes
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="px-5 py-3 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
+                            <a href="@Url.Action("Manage", "LiveClass", new { id = liveClass.Id })" 
+                               class="text-indigo-600 hover:text-indigo-800 text-sm font-medium">
+                                Manage
+                            </a>
+                            <div class="flex space-x-2">
+                                @if (liveClass.Status == LMS.Models.LiveClassStatus.Scheduled && liveClass.ScheduledAt <= DateTime.Now.AddMinutes(30))
+                                {
+                                    <a href="@Url.Action("Join", "LiveClass", new { id = liveClass.Id })" 
+                                       class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                        Join Now
+                                    </a>
+                                }
+                                else if (liveClass.Status == LMS.Models.LiveClassStatus.Live)
+                                {
+                                    <a href="@Url.Action("Join", "LiveClass", new { id = liveClass.Id })" 
+                                       class="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+                                        Join Live
+                                    </a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-16 bg-white rounded-xl border border-gray-200">
+                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                </svg>
+                <h3 class="mt-4 text-lg font-medium text-gray-900">No live classes yet</h3>
+                <p class="mt-2 text-gray-500 max-w-sm mx-auto">Schedule your first live class to engage with your students in real-time.</p>
+                <div class="mt-6">
+                    <a href="/Instructor" class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition-colors">
+                        Create Your First Live Class
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+</div>

@@ -1,0 +1,75 @@
+@model IEnumerable<LMS.Models.Certificate>
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My Certificates";
+}
+
+<div class="space-y-6">
+    <div class="flex items-center justify-between">
+        <div>
+            <h2 class="text-2xl font-bold text-gray-900">My Certificates</h2>
+            <p class="text-gray-500 mt-1">Download and view your course completion certificates</p>
+        </div>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach (var certificate in Model)
+            {
+                <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="bg-gradient-to-br from-amber-50 to-yellow-100 p-8 text-center border-b border-amber-200">
+                        <div class="w-20 h-20 mx-auto bg-amber-400 rounded-full flex items-center justify-center mb-4 shadow-lg">
+                            <i class="bi bi-award text-3xl text-white"></i>
+                        </div>
+                        <h3 class="font-bold text-gray-900 text-lg">Certificate of Completion</h3>
+                        <p class="text-amber-700 text-sm mt-1">@certificate.CourseName</p>
+                    </div>
+                    
+                    <div class="p-4">
+                        <div class="space-y-2 text-sm">
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Student</span>
+                                <span class="text-gray-900 font-medium">@certificate.StudentName</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Instructor</span>
+                                <span class="text-gray-900">@certificate.InstructorName</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Issued Date</span>
+                                <span class="text-gray-900">@certificate.IssuedAt.ToString("MMM dd, yyyy")</span>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500">Certificate No.</span>
+                                <span class="text-gray-900 font-mono text-xs">@certificate.CertificateNumber</span>
+                            </div>
+                        </div>
+                        
+                        <div class="mt-4 flex gap-2">
+                            <a asp-action="View" asp-route-id="@certificate.Id" class="flex-1 py-2 text-center bg-primary-100 text-primary-700 rounded-lg hover:bg-primary-200 transition-colors">
+                                <i class="bi bi-eye mr-1"></i>View
+                            </a>
+                            <a asp-action="Download" asp-route-id="@certificate.Id" class="flex-1 py-2 text-center bg-amber-100 text-amber-700 rounded-lg hover:bg-amber-200 transition-colors">
+                                <i class="bi bi-download mr-1"></i>Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+            <div class="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <i class="bi bi-award text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">No certificates yet</h3>
+            <p class="text-gray-500 mb-6">Complete a course to receive your certificate</p>
+            <a asp-controller="Courses" asp-action="Index" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                <i class="bi bi-book mr-2"></i>Browse Courses
+            </a>
+        </div>
+    }
+</div>

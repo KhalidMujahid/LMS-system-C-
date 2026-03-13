@@ -1,0 +1,98 @@
+@model LMS.Models.LiveClass
+@{
+    ViewData["Title"] = Model.Title;
+    var isInstructor = Model.InstructorId == User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var isLive = Model.Status == LMS.Models.LiveClassStatus.Live;
+    
+    var jitsiRoomName = "";
+    if (!string.IsNullOrEmpty(Model.MeetingUrl) && Model.MeetingUrl.Contains("meet.jit.si"))
+    {
+        jitsiRoomName = Model.MeetingUrl.Replace("https://meet.jit.si/", "").Replace("http://meet.jit.si/", "");
+    }
+}
+
+<div class="min-h-screen bg-gray-900">
+    <div class="bg-gray-800 border-b border-gray-700 px-4 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center">
+                @if (isLive)
+                {
+                    <span class="flex items-center text-red-500 text-sm font-medium mr-4">
+                        <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse mr-2"></span>
+                        LIVE
+                    </span>
+                }
+                <h1 class="text-white font-semibold">@Model.Title</h1>
+                <span class="ml-3 text-gray-400 text-sm">@Model.Course?.Title</span>
+            </div>
+            <div class="flex items-center gap-3">
+                @if (isInstructor)
+                {
+                    <span class="text-gray-400 text-sm">You are the host</span>
+                }
+                <a href="@Model.MeetingUrl" target="_blank" class="px-3 py-1.5 bg-gray-700 text-white text-sm rounded-lg hover:bg-gray-600 transition-colors">
+                    <i class="bi bi-box-arrow-up-right mr-1"></i>Open in New Tab
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative h-[calc(100vh-120px)]">
+        @if (!string.IsNullOrEmpty(jitsiRoomName))
+        {
+            <iframe 
+                id="jitsi-frame"
+                allow="camera; microphone; fullscreen; display-capture" 
+                src="https://meet.jit.si/@jitsiRoomName?embed=true&pwd=@Model.MeetingPassword"
+                class="w-full h-full border-0"
+                allowfullscreen>
+            </iframe>
+        }
+        else
+        {
+            <div class="flex flex-col items-center justify-center h-full text-white">
+                <div class="text-center max-w-lg">
+                    <div class="w-20 h-20 bg-primary-600 rounded-full flex items-center justify-center mx-auto mb-6">
+                        <i class="bi bi-camera-video text-4xl"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold mb-4">@Model.Title</h2>
+                    <p class="text-gray-400 mb-6">Click the button below to join the live session</p>
+                    <a href="@Model.MeetingUrl" target="_blank" class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition-colors">
+                        <i class="bi bi-camera-video-fill mr-2"></i>
+                        Join Live Session
+                    </a>
+                    @if (!string.IsNullOrEmpty(Model.MeetingPassword))
+                    {
+                        <div class="mt-6 p-4 bg-gray-800 rounded-lg">
+                            <p class="text-sm text-gray-400">Meeting Password</p>
+                            <p class="text-lg font-mono text-white">@Model.MeetingPassword</p>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="bg-gray-800 border-t border-gray-700 px-4 py-3">
+        <div class="flex items-center justify-between">
+            <div class="flex items-center text-gray-400 text-sm">
+                <i class="bi bi-clock mr-2"></i>
+                <span>Duration: @Model.DurationMinutes minutes</span>
+                <span class="mx-2">•</span>
+                <span>Started: @(Model.StartedAt?.ToString("h:mm tt") ?? "Not started")</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <a asp-controller="Courses" asp-action="Details" asp-route-id="@Model.CourseId" class="text-gray-400 hover:text-white text-sm transition-colors">
+                    <i class="bi bi-arrow-left mr-1"></i>Back to Course
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Hide Jitsi watermark */
+    .iframe::-webkit-media-controls {
+        display: none !important;
+    }
+</style>

@@ -12,11 +12,46 @@ namespace LMS.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IWebHostEnvironment _environment;
 
-        public InstructorController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
+        public InstructorController(ApplicationDbContext context, UserManager<ApplicationUser> userManager, IWebHostEnvironment environment)
         {
             _context = context;
             _userManager = userManager;
+            _environment = environment;
+        }
+
+        private async Task<string?> SaveImageAsync(IFormFile file)
+        {
+            if (file == null || file.Length == 0) return null;
+            
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".gif" };
+            var extension = Path.GetExtension(file.FileName).ToLower();
+            
+            if (!allowedExtensions.Contains(extension))
+            {
+                ModelState.AddModelError("CourseImage", "Only JPG, PNG, and GIF files are allowed.");
+                return null;
+            }
+            
+            if (file.Length > 5 * 1024 * 1024)
+            {
+                ModelState.AddModelError("CourseImage", "File size must be less than 5MB.");
+                return null;
+            }
+            
+            var uploadsFolder = Path.Combine(_environment.WebRootPath, "uploads", "courses");
+            Directory.CreateDirectory(uploadsFolder);
+            
+            var fileName = $"{Guid.NewGuid()}{extension}";
+            var filePath = Path.Combine(uploadsFolder, fileName);
+            
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+            
+            return $"/uploads/courses/{fileName}";
         }
 
         public async Task<IActionResult> Index()
@@ -38,13 +73,19 @@ namespace LMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateCourse(Course model)
+        public async Task<IActionResult> CreateCourse(Course model, IFormFile? CourseImage)
         {
             if (!ModelState.IsValid) return View(model);
 
             var user = await _userManager.GetUserAsync(User);
             model.InstructorId = user!.Id;
             model.CreatedAt = DateTime.UtcNow;
+            
+            if (CourseImage != null && CourseImage.Length > 0)
+            {
+                model.ThumbnailUrl = await SaveImageAsync(CourseImage);
+            }
+            
             _context.Courses.Add(model);
             await _context.SaveChangesAsync();
             TempData["Success"] = "Course created successfully.";
@@ -61,7 +102,7 @@ namespace LMS.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> EditCourse(Course model)
+        public async Task<IActionResult> EditCourse(Course model, IFormFile? CourseImage)
         {
             if (!ModelState.IsValid) return View(model);
             var user = await _userManager.GetUserAsync(User);
@@ -72,7 +113,14 @@ namespace LMS.Controllers
             course.Description = model.Description;
             course.Category = model.Category;
             course.Status = model.Status;
+            course.Price = model.Price;
             course.UpdatedAt = DateTime.UtcNow;
+            
+            if (CourseImage != null && CourseImage.Length > 0)
+            {
+                course.ThumbnailUrl = await SaveImageAsync(CourseImage);
+            }
+            
             await _context.SaveChangesAsync();
             TempData["Success"] = "Course updated successfully.";
             return RedirectToAction(nameof(ManageCourse), new { id = model.Id });
@@ -90,6 +138,13 @@ namespace LMS.Controllers
                 .FirstOrDefaultAsync(c => c.Id == id && c.InstructorId == user!.Id);
 
             if (course == null) return NotFound();
+            
+            var liveClasses = await _context.LiveClasses
+                .Where(l => l.CourseId == id)
+                .OrderByDescending(l => l.ScheduledAt)
+                .ToListAsync();
+            
+            ViewBag.LiveClasses = liveClasses;
             return View(course);
         }
 

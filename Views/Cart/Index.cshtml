@@ -1,0 +1,116 @@
+@model LMS.Models.Cart
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <div class="mb-8">
+        <h1 class="text-3xl font-bold text-gray-900">Shopping Cart</h1>
+        <p class="text-gray-600 mt-1">Review your courses before checkout</p>
+    </div>
+
+    @if (Model?.Items == null || !Model.Items.Any())
+    {
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 py-16 px-6 text-center">
+            <div class="mx-auto h-20 w-20 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                <i class="bi bi-cart text-3xl text-gray-400"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Your cart is empty</h3>
+            <p class="text-gray-500 mb-6 max-w-md mx-auto">Browse our courses and add some to your cart to get started</p>
+            <a asp-controller="Courses" asp-action="Index" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                <i class="bi bi-book mr-2"></i>Browse Courses
+            </a>
+        </div>
+    }
+    else
+    {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+                    @foreach (var item in Model.Items)
+                    {
+                        <div class="flex items-center p-4 border-b border-gray-100 last:border-b-0">
+                            <div class="h-20 w-20 bg-gradient-to-br from-primary-500 to-primary-700 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <i class="bi bi-book text-white text-2xl"></i>
+                            </div>
+                            
+                            <div class="ml-4 flex-1">
+                                <h3 class="font-bold text-gray-900">@item.Course?.Title</h3>
+                                <p class="text-sm text-gray-500">@item.Course?.Instructor?.FullName</p>
+                                <div class="flex items-center mt-1">
+                                    <span class="text-xs text-gray-500">
+                                        <i class="bi bi-book mr-1"></i>@item.Course?.LessonCount lessons
+                                    </span>
+                                    @if (item.Course?.Category != null)
+                                    {
+                                        <span class="ml-3 px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">
+                                            @item.Course.Category
+                                        </span>
+                                    }
+                                </div>
+                            </div>
+                            
+                            <div class="text-right">
+                                <div class="font-bold text-lg text-gray-900">
+                                    @if (item.Course?.Price > 0)
+                                    {
+                                        @item.Course.PriceInNaira.ToString("₦#,##0.00")
+                                    }
+                                    else
+                                    {
+                                        <span class="text-green-600">Free</span>
+                                    }
+                                </div>
+                                <form asp-action="RemoveFromCart" method="post" class="mt-2">
+                                    <input type="hidden" name="itemId" value="@item.Id" />
+                                    <button type="submit" class="text-red-500 hover:text-red-700 text-sm">
+                                        <i class="bi bi-trash mr-1"></i>Remove
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            
+            <!-- Order Summary -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-24">
+                    <h2 class="text-lg font-bold text-gray-900 mb-4">Order Summary</h2>
+                    
+                    <div class="space-y-3 mb-4">
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Subtotal (@Model.ItemCount courses)</span>
+                            <span class="font-medium">@Model.TotalAmountInNaira.ToString("₦#,##0.00")</span>
+                        </div>
+                        <div class="flex justify-between text-sm">
+                            <span class="text-gray-600">Tax</span>
+                            <span class="font-medium">₦0.00</span>
+                        </div>
+                    </div>
+                    
+                    <hr class="border-gray-200 my-4" />
+                    
+                    <div class="flex justify-between mb-6">
+                        <span class="font-bold text-gray-900">Total</span>
+                        <span class="font-bold text-xl text-primary-600">@Model.TotalAmountInNaira.ToString("₦#,##0.00")</span>
+                    </div>
+                    
+                    <form asp-action="Checkout" method="post">
+                        <button type="submit" class="w-full py-3 px-4 bg-primary-600 text-white font-bold rounded-lg hover:bg-primary-700 transition-colors">
+                            <i class="bi bi-lock mr-2"></i>Proceed to Checkout
+                        </button>
+                    </form>
+                    
+                    <p class="text-xs text-gray-500 text-center mt-4">
+                        <i class="bi bi-shield-check mr-1"></i>Secure payment powered by Paystack
+                    </p>
+                    
+                    <a asp-controller="Courses" asp-action="Index" class="block text-center mt-4 text-primary-600 hover:text-primary-700 text-sm">
+                        <i class="bi bi-plus mr-1"></i>Add more courses
+                    </a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

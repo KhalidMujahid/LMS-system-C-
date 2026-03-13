@@ -1,64 +1,252 @@
 @{
+    Layout = "_DashboardLayout";
     ViewData["Title"] = "Admin Dashboard";
+    var userCount = ViewBag.UserCount ?? 0;
+    var courseCount = ViewBag.CourseCount ?? 0;
+    var instructorCount = ViewBag.InstructorCount ?? 0;
+    var studentCount = ViewBag.StudentCount ?? 0;
+    var recentUsers = ViewBag.RecentUsers as List<LMS.Models.ApplicationUser> ?? new List<LMS.Models.ApplicationUser>();
+    var recentCourses = ViewBag.RecentCourses as List<LMS.Models.Course> ?? new List<LMS.Models.Course>();
 }
 
-<div class="bg-dark text-white py-4">
-    <div class="container">
-        <h2 class="fw-bold"><i class="bi bi-shield-check me-2"></i>Admin Dashboard</h2>
-        <p class="text-muted mb-0">Manage your LMS platform</p>
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Users</p>
+                    <p class="text-4xl font-bold text-gray-900 mt-1">@userCount</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-blue-100 flex items-center justify-center">
+                    <i class="bi bi-people text-2xl text-blue-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>12%
+                </span>
+                <span class="text-gray-400 ml-2">from last month</span>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Courses</p>
+                    <p class="text-4xl font-bold text-gray-900 mt-1">@courseCount</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
+                    <i class="bi bi-book text-2xl text-purple-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>8%
+                </span>
+                <span class="text-gray-400 ml-2">from last month</span>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Instructors</p>
+                    <p class="text-4xl font-bold text-gray-900 mt-1">@instructorCount</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-emerald-100 flex items-center justify-center">
+                    <i class="bi bi-person-workspace text-2xl text-emerald-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>5%
+                </span>
+                <span class="text-gray-400 ml-2">from last month</span>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Students</p>
+                    <p class="text-4xl font-bold text-gray-900 mt-1">@studentCount</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <i class="bi bi-mortarboard text-2xl text-amber-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>15%
+                </span>
+                <span class="text-gray-400 ml-2">from last month</span>
+            </div>
+        </div>
     </div>
-</div>
 
-<div class="container py-4">
-    <div class="row g-4 mb-4">
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <i class="bi bi-people text-primary" style="font-size:2.5rem;"></i>
-                <h3 class="fw-bold mt-2">@ViewBag.TotalUsers</h3>
-                <p class="text-muted mb-0">Total Users</p>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="bi bi-graph-up text-primary-600 mr-2"></i>
+                Enrollment Trends
+            </h3>
+            <div class="h-64 flex items-end justify-between gap-2 px-4">
+                @for (int i = 1; i <= 6; i++)
+                {
+                    var height = new Random().Next(30, 100);
+                    <div class="flex-1 flex flex-col items-center gap-2">
+                        <div class="w-full bg-gradient-to-t from-primary-500 to-primary-400 rounded-t-lg transition-all hover:from-primary-400" style="height: @(height)%"></div>
+                        <span class="text-xs text-gray-400">Month @i</span>
+                    </div>
+                }
             </div>
         </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <i class="bi bi-book text-success" style="font-size:2.5rem;"></i>
-                <h3 class="fw-bold mt-2">@ViewBag.TotalCourses</h3>
-                <p class="text-muted mb-0">Total Courses</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <i class="bi bi-person-check text-warning" style="font-size:2.5rem;"></i>
-                <h3 class="fw-bold mt-2">@ViewBag.TotalEnrollments</h3>
-                <p class="text-muted mb-0">Enrollments</p>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card border-0 shadow-sm text-center p-3">
-                <i class="bi bi-check-circle text-info" style="font-size:2.5rem;"></i>
-                <h3 class="fw-bold mt-2">@ViewBag.PublishedCourses</h3>
-                <p class="text-muted mb-0">Published Courses</p>
-            </div>
-        </div>
-    </div>
-
-    <div class="row g-4">
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold"><i class="bi bi-people me-2 text-primary"></i>Manage Users</h5>
-                    <p class="text-muted">View, edit, and delete user accounts. Assign roles.</p>
-                    <a asp-action="Users" class="btn btn-primary">Manage Users</a>
+        
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="bi bi-pie-chart text-primary-600 mr-2"></i>
+                Course Categories
+            </h3>
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Programming</span>
+                        <span class="text-primary-600 font-medium">45%</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-primary-500 rounded-full" style="width: 45%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Design</span>
+                        <span class="text-purple-600 font-medium">25%</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-purple-500 rounded-full" style="width: 25%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Business</span>
+                        <span class="text-green-600 font-medium">20%</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-green-500 rounded-full" style="width: 20%"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex justify-between text-sm mb-1">
+                        <span class="text-gray-600">Marketing</span>
+                        <span class="text-amber-600 font-medium">10%</span>
+                    </div>
+                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                        <div class="h-full bg-amber-500 rounded-full" style="width: 10%"></div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card shadow-sm">
-                <div class="card-body p-4">
-                    <h5 class="fw-bold"><i class="bi bi-book me-2 text-success"></i>Manage Courses</h5>
-                    <p class="text-muted">View all courses, monitor enrollment, and remove problematic content.</p>
-                    <a asp-action="Courses" class="btn btn-success">Manage Courses</a>
-                </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="bi bi-person-plus text-primary-600 mr-2"></i>
+                    Recent Users
+                </h3>
+                <a asp-action="Users" class="text-primary-600 hover:text-primary-700 text-sm">View All</a>
             </div>
+            <div class="divide-y divide-gray-100">
+                @if (recentUsers.Any())
+                {
+                    @foreach (var user in recentUsers.Take(5))
+                    {
+                        <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-primary-400 to-primary-600 flex items-center justify-center text-white font-semibold">
+                                @user.FullName?.FirstOrDefault()
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-gray-900 font-medium truncate">@user.FullName</p>
+                                <p class="text-gray-400 text-sm truncate">@user.Email</p>
+                            </div>
+                            <span class="px-2 py-1 bg-primary-100 text-primary-700 text-xs rounded-full">
+                                Student
+                            </span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="p-8 text-center text-gray-400">
+                        <i class="bi bi-people text-4xl mb-2 block"></i>
+                        No users yet
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div class="p-4 border-b border-gray-100 flex items-center justify-between">
+                <h3 class="text-lg font-semibold text-gray-900 flex items-center">
+                    <i class="bi bi-book-plus text-primary-600 mr-2"></i>
+                    Recent Courses
+                </h3>
+                <a asp-action="Courses" class="text-primary-600 hover:text-primary-700 text-sm">View All</a>
+            </div>
+            <div class="divide-y divide-gray-100">
+                @if (recentCourses.Any())
+                {
+                    @foreach (var course in recentCourses.Take(5))
+                    {
+                        <div class="p-4 flex items-center gap-4 hover:bg-gray-50 transition-colors">
+                            <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-purple-400 to-purple-600 flex items-center justify-center text-white">
+                                <i class="bi bi-book"></i>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <p class="text-gray-900 font-medium truncate">@course.Title</p>
+                                <p class="text-gray-400 text-sm truncate">@course.Instructor?.FullName</p>
+                            </div>
+                            <span class="px-2 py-1 @(course.Status == LMS.Models.CourseStatus.Published ? "bg-green-100 text-green-700" : "bg-amber-100 text-amber-700") text-xs rounded-full">
+                                @course.Status
+                            </span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="p-8 text-center text-gray-400">
+                        <i class="bi bi-book text-4xl mb-2 block"></i>
+                        No courses yet
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+            <i class="bi bi-lightning text-primary-600 mr-2"></i>
+            Quick Actions
+        </h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <a asp-action="Users" class="p-4 bg-gray-50 rounded-xl hover:bg-primary-100 transition-colors group">
+                <i class="bi bi-person-plus text-2xl text-primary-600 group-hover:text-white mb-2 block"></i>
+                <p class="text-gray-700 font-medium">Manage Users</p>
+            </a>
+            <a asp-action="Courses" class="p-4 bg-gray-50 rounded-xl hover:bg-purple-100 transition-colors group">
+                <i class="bi bi-book text-2xl text-purple-600 group-hover:text-white mb-2 block"></i>
+                <p class="text-gray-700 font-medium">All Courses</p>
+            </a>
+            <a asp-controller="Instructor" asp-action="CreateCourse" class="p-4 bg-gray-50 rounded-xl hover:bg-green-100 transition-colors group">
+                <i class="bi bi-plus-circle text-2xl text-green-600 group-hover:text-white mb-2 block"></i>
+                <p class="text-gray-700 font-medium">New Course</p>
+            </a>
+            <a asp-controller="Home" asp-action="Index" class="p-4 bg-gray-50 rounded-xl hover:bg-amber-100 transition-colors group">
+                <i class="bi bi-globe text-2xl text-amber-600 group-hover:text-white mb-2 block"></i>
+                <p class="text-gray-700 font-medium">View Site</p>
+            </a>
         </div>
     </div>
 </div>

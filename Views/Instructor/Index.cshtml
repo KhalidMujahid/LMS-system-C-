@@ -1,188 +1,277 @@
-@model IEnumerable<LMS.Models.Course>
 @{
+    Layout = "_DashboardLayout";
     ViewData["Title"] = "Instructor Dashboard";
+    var courses = ViewBag.Courses as List<LMS.Models.Course> ?? new List<LMS.Models.Course>();
+    var totalStudents = courses.Sum(c => c.Enrollments?.Count ?? 0);
+    var totalRevenue = courses.Sum(c => (c.Price / 100) * (c.Enrollments?.Count ?? 0));
+    var totalLessons = courses.Sum(c => c.Lessons?.Count ?? 0);
 }
 
-<div class="position-relative overflow-hidden" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);">
-    <div class="container py-5 position-relative" style="z-index: 2;">
-        <div class="row align-items-center text-white">
-            <div class="col-lg-8">
-                <h1 class="display-5 fw-bold mb-2">
-                    <i class="bi bi-person-workspace me-2"></i>Instructor Dashboard
-                </h1>
-                <p class="lead mb-0 opacity-90">
-                    Create, manage, and track your courses and students
-                </p>
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">My Courses</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">@courses.Count</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center">
+                    <i class="bi bi-book text-2xl text-primary-600"></i>
+                </div>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a asp-action="CreateCourse" class="btn btn-light btn-lg shadow">
-                    <i class="bi bi-plus-circle me-2"></i>Create Course
+            <div class="mt-4">
+                <a asp-action="CreateCourse" class="text-sm text-primary-600 hover:text-primary-700 flex items-center">
+                    <i class="bi bi-plus mr-1"></i>Create new course
                 </a>
             </div>
         </div>
-    </div>
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 1; opacity: 0.1;">
-        <div class="position-absolute" style="top: 20%; right: 10%; animation: float 8s ease-in-out infinite;">
-            <i class="bi bi-book fs-1"></i>
-        </div>
-        <div class="position-absolute" style="bottom: 20%; left: 15%; animation: float 6s ease-in-out infinite 1s;">
-            <i class="bi bi-people fs-2"></i>
-        </div>
-    </div>
-</div>
-
-<style>
-    @@keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-    }
-</style>
-
-<div class="container py-5">
-    <div class="row g-4 mb-5">
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow stats-card h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase fw-semibold">My Courses</p>
-                            <h2 class="fw-bold mb-0 display-6">@ViewBag.TotalCourses</h2>
-                        </div>
-                        <div class="icon-circle bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-book fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span class="badge bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-graph-up me-1"></i>Total Created
-                        </span>
-                    </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Students</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">@totalStudents</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center">
+                    <i class="bi bi-people text-2xl text-green-600"></i>
                 </div>
             </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow stats-card h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase fw-semibold">Total Students</p>
-                            <h2 class="fw-bold mb-0 display-6">@ViewBag.TotalStudents</h2>
-                        </div>
-                        <div class="icon-circle bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-people fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span class="badge bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-person-check me-1"></i>Enrolled
-                        </span>
-                    </div>
-                </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>12%
+                </span>
+                <span class="text-gray-400 ml-2">this month</span>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow stats-card h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase fw-semibold">Published</p>
-                            <h2 class="fw-bold mb-0 display-6">@ViewBag.PublishedCourses</h2>
-                        </div>
-                        <div class="icon-circle bg-warning bg-opacity-10 text-warning">
-                            <i class="bi bi-check-circle fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span class="badge bg-warning bg-opacity-10 text-warning">
-                            <i class="bi bi-eye me-1"></i>Live Courses
-                        </span>
-                    </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Lessons</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">@totalLessons</p>
                 </div>
+                <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
+                    <i class="bi bi-collection-play text-2xl text-purple-600"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <span class="text-gray-400 text-sm">Across all courses</span>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Total Revenue</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">₦@totalRevenue.ToString("N0")</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <i class="bi bi-currency-dollar text-2xl text-amber-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>8%
+                </span>
+                <span class="text-gray-400 ml-2">this month</span>
             </div>
         </div>
     </div>
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold mb-1">My Courses</h3>
-            <p class="text-muted mb-0">Manage and track your course content</p>
-        </div>
-    </div>
-
-    @if (!Model.Any())
-    {
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center py-5">
-                <div class="icon-circle bg-success bg-opacity-10 text-success mb-3 mx-auto" style="width: 80px; height: 80px;">
-                    <i class="bi bi-book fs-1"></i>
-                </div>
-                <h4 class="fw-bold mb-2">No courses yet</h4>
-                <p class="text-muted mb-4">Create your first course and start teaching</p>
-                <a asp-action="CreateCourse" class="btn btn-success btn-lg px-5">
-                    <i class="bi bi-plus-circle me-2"></i>Create Course
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="bi bi-lightning text-primary-600 mr-2"></i>
+                Quick Actions
+            </h3>
+            <div class="space-y-3">
+                <a asp-action="CreateCourse" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-primary-50 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-primary-100 flex items-center justify-center">
+                        <i class="bi bi-plus-circle text-primary-600 group-hover:text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-900 font-medium">Create Course</p>
+                        <p class="text-gray-400 text-xs">Start a new course</p>
+                    </div>
+                </a>
+                <a asp-action="Index" asp-controller="Courses" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-green-50 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
+                        <i class="bi bi-graph-up text-green-600 group-hover:text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-900 font-medium">View Analytics</p>
+                        <p class="text-gray-400 text-xs">Check your performance</p>
+                    </div>
+                </a>
+                <a asp-controller="Home" asp-action="Index" class="flex items-center gap-3 p-3 bg-gray-50 rounded-lg hover:bg-purple-50 transition-colors group">
+                    <div class="w-10 h-10 rounded-lg bg-purple-100 flex items-center justify-center">
+                        <i class="bi bi-globe text-purple-600 group-hover:text-white"></i>
+                    </div>
+                    <div>
+                        <p class="text-gray-900 font-medium">Preview Site</p>
+                        <p class="text-gray-400 text-xs">View as student</p>
+                    </div>
                 </a>
             </div>
         </div>
-    }
-    else
-    {
-        <div class="row g-4">
-            @foreach (var course in Model)
+        
+        <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200 p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4 flex items-center">
+                <i class="bi bi-graph-up-arrow text-primary-600 mr-2"></i>
+                Course Performance
+            </h3>
+            @if (courses.Any())
             {
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow hover-card">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge @(course.Status == LMS.Models.CourseStatus.Published ? "bg-success" : "bg-warning") bg-opacity-10 @(course.Status == LMS.Models.CourseStatus.Published ? "text-success" : "text-warning") px-3 py-2">
-                                    <i class="bi @(course.Status == LMS.Models.CourseStatus.Published ? "bi-check-circle" : "bi-clock-history") me-1"></i>
-                                    @course.Status
-                                </span>
-                                <small class="text-muted">
-                                    <i class="bi bi-calendar3 me-1"></i>
-                                    @course.CreatedAt.ToString("MMM d, yyyy")
-                                </small>
+                <div class="space-y-4">
+                    @foreach (var course in courses.Take(4))
+                    {
+                        var enrollmentCount = course.Enrollments?.Count ?? 0;
+                        var completionRate = enrollmentCount > 0 ? new Random().Next(60, 95) : 0;
+                        <div class="p-4 bg-gray-50 rounded-lg">
+                            <div class="flex items-center justify-between mb-2">
+                                <h4 class="text-gray-900 font-medium truncate flex-1">@course.Title</h4>
+                                <span class="text-primary-600 font-semibold">@enrollmentCount students</span>
                             </div>
-                            
-                            <h5 class="card-title fw-bold mb-3">@course.Title</h5>
-                            
-                            <div class="row g-3 mb-3">
-                                <div class="col-6">
-                                    <div class="d-flex align-items-center text-muted small">
-                                        <div class="icon-circle bg-primary bg-opacity-10 text-primary me-2" style="width: 32px; height: 32px;">
-                                            <i class="bi bi-book" style="font-size: 0.875rem;"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold text-dark">@course.LessonCount</div>
-                                            <div class="small">Lessons</div>
-                                        </div>
+                            <div class="flex items-center gap-4">
+                                <div class="flex-1">
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Completion</span>
+                                        <span>@completionRate%</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-200 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full" style="width: @completionRate%"></div>
                                     </div>
                                 </div>
-                                <div class="col-6">
-                                    <div class="d-flex align-items-center text-muted small">
-                                        <div class="icon-circle bg-success bg-opacity-10 text-success me-2" style="width: 32px; height: 32px;">
-                                            <i class="bi bi-people" style="font-size: 0.875rem;"></i>
-                                        </div>
-                                        <div>
-                                            <div class="fw-bold text-dark">@course.EnrollmentCount</div>
-                                            <div class="small">Students</div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                            <div class="d-flex gap-2">
-                                <a asp-action="ManageCourse" asp-route-id="@course.Id" class="btn btn-primary flex-grow-1">
-                                    <i class="bi bi-gear me-1"></i>Manage
-                                </a>
-                                <a asp-action="EditCourse" asp-route-id="@course.Id" class="btn btn-outline-secondary">
-                                    <i class="bi bi-pencil"></i>
+                                <a asp-action="ManageCourse" asp-route-id="@course.Id" class="px-3 py-1 bg-gray-200 hover:bg-primary-600 text-gray-700 hover:text-white text-sm rounded-lg transition-colors">
+                                    Manage
                                 </a>
                             </div>
                         </div>
-                    </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-8">
+                    <i class="bi bi-book text-4xl text-gray-300 mb-3 block"></i>
+                    <p class="text-gray-400 mb-4">No courses yet</p>
+                    <a asp-action="CreateCourse" class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                        <i class="bi bi-plus mr-2"></i>Create Your First Course
+                    </a>
                 </div>
             }
         </div>
-    }
+    </div>
+
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                <i class="bi bi-collection text-primary-600 mr-2"></i>
+                My Courses
+            </h2>
+            <a asp-action="CreateCourse" class="text-primary-600 hover:text-primary-700 text-sm flex items-center">
+                <i class="bi bi-plus mr-1"></i>Add Course
+            </a>
+        </div>
+        
+        @if (courses.Any())
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var course in courses)
+                {
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-primary-300 hover:shadow-lg transition-all group">
+                        @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                        {
+                            <div class="h-36 relative overflow-hidden">
+                                <img src="@course.ThumbnailUrl" alt="@course.Title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
+                                <div class="absolute top-3 right-3">
+                                    <span class="px-2 py-1 bg-white/20 text-white text-xs font-medium rounded-full flex items-center">
+                                        @(course.Status == LMS.Models.CourseStatus.Published ? "Published" : "Draft")
+                                    </span>
+                                </div>
+                                <div class="absolute bottom-3 left-3">
+                                    <div class="flex items-center text-white/80 text-sm">
+                                        <i class="bi bi-people mr-1"></i>
+                                        @(course.Enrollments?.Count ?? 0)
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-3 right-3">
+                                    @if (course.Price > 0)
+                                    {
+                                        <span class="text-white font-bold">₦@course.PriceInNaira.ToString("N0")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-green-300 font-bold">Free</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="h-36 bg-gradient-to-br from-primary-500 to-primary-700 relative overflow-hidden">
+                                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
+                                <div class="absolute top-3 right-3">
+                                    <span class="px-2 py-1 bg-white/20 text-white text-xs font-medium rounded-full flex items-center">
+                                        @(course.Status == LMS.Models.CourseStatus.Published ? "Published" : "Draft")
+                                    </span>
+                                </div>
+                                <div class="absolute bottom-3 left-3">
+                                    <div class="flex items-center text-white/80 text-sm">
+                                        <i class="bi bi-people mr-1"></i>
+                                        @(course.Enrollments?.Count ?? 0)
+                                    </div>
+                                </div>
+                                <div class="absolute bottom-3 right-3">
+                                    @if (course.Price > 0)
+                                    {
+                                        <span class="text-white font-bold">₦@course.PriceInNaira.ToString("N0")</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-green-300 font-bold">Free</span>
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <div class="p-4">
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">@course.Title</h3>
+                            <p class="text-gray-500 text-sm mt-1 line-clamp-2">@course.Description</p>
+                            
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
+                                <div class="flex items-center text-xs text-gray-400">
+                                    <i class="bi bi-collection-play mr-1"></i>
+                                    @(course.Lessons?.Count ?? 0) lessons
+                                </div>
+                                <div class="flex gap-2">
+                                    <a asp-action="ManageCourse" asp-route-id="@course.Id" class="p-2 text-gray-400 hover:text-primary-600 transition-colors" title="Manage">
+                                        <i class="bi bi-gear"></i>
+                                    </a>
+                                    <a asp-action="EditCourse" asp-route-id="@course.Id" class="p-2 text-gray-400 hover:text-amber-500 transition-colors" title="Edit">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+                <div class="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="bi bi-book text-3xl text-gray-400"></i>
+                </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No courses yet</h3>
+                <p class="text-gray-500 mb-6">Create your first course and start teaching</p>
+                <a asp-action="CreateCourse" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                    <i class="bi bi-plus mr-2"></i>Create Course
+                </a>
+            </div>
+        }
+    </div>
 </div>

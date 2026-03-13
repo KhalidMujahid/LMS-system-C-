@@ -24,6 +24,9 @@ namespace LMS.Models
         [MaxLength(100)]
         public string? Category { get; set; }
 
+        // Price in kobo (Nigerian Naira) - Paystack uses kobo
+        public decimal Price { get; set; } = 0;
+
         public CourseStatus Status { get; set; } = CourseStatus.Draft;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -35,8 +38,12 @@ namespace LMS.Models
         public ICollection<Lesson> Lessons { get; set; } = new List<Lesson>();
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<Quiz> Quizzes { get; set; } = new List<Quiz>();
+        public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 
         public int EnrollmentCount => Enrollments?.Count ?? 0;
         public int LessonCount => Lessons?.Count ?? 0;
+
+        // Helper property to display price in Naira
+        public decimal PriceInNaira => Price / 100;
     }
 }

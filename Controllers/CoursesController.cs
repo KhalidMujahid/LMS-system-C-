@@ -44,7 +44,6 @@ namespace LMS.Controllers
             ViewBag.Search = search;
             ViewBag.SelectedCategory = category;
 
-            // Check enrollments if user is logged in
             if (User.Identity?.IsAuthenticated == true)
             {
                 var user = await _userManager.GetUserAsync(User);
@@ -71,16 +70,34 @@ namespace LMS.Controllers
 
             bool isEnrolled = false;
             Enrollment? enrollment = null;
+            bool isInCart = false;
+            
             if (User.Identity?.IsAuthenticated == true)
             {
                 var user = await _userManager.GetUserAsync(User);
                 enrollment = await _context.Enrollments
                     .FirstOrDefaultAsync(e => e.UserId == user!.Id && e.CourseId == id);
                 isEnrolled = enrollment != null;
+                
+                if (!isEnrolled)
+                {
+                    var cart = await _context.Carts
+                        .Include(c => c.Items)
+                        .FirstOrDefaultAsync(c => c.UserId == user!.Id);
+                    isInCart = cart?.Items.Any(i => i.CourseId == id) ?? false;
+                }
             }
 
             ViewBag.IsEnrolled = isEnrolled;
+            ViewBag.IsInCart = isInCart;
             ViewBag.Enrollment = enrollment;
+            
+            var liveClasses = await _context.LiveClasses
+                .Where(l => l.CourseId == id && l.Status != LiveClassStatus.Cancelled)
+                .OrderByDescending(l => l.ScheduledAt)
+                .ToListAsync();
+            ViewBag.LiveClasses = liveClasses;
+            
             return View(course);
         }
 
@@ -193,13 +210,14 @@ namespace LMS.Controllers
                 progress.CompletedAt = DateTime.UtcNow;
             }
 
-            // Update enrollment progress
             var totalLessons = await _context.Lessons.CountAsync(l => l.CourseId == lesson.CourseId);
             var completedCount = await _context.LessonProgresses
                 .CountAsync(lp => lp.UserId == user!.Id && lp.IsCompleted &&
                     _context.Lessons.Any(l => l.Id == lp.LessonId && l.CourseId == lesson.CourseId));
 
             var enrollment = await _context.Enrollments
+                .Include(e => e.Course)
+                    .ThenInclude(c => c!.Instructor)
                 .FirstOrDefaultAsync(e => e.UserId == user!.Id && e.CourseId == lesson.CourseId);
 
             if (enrollment != null)
@@ -209,6 +227,34 @@ namespace LMS.Controllers
                 {
                     enrollment.Status = EnrollmentStatus.Completed;
                     enrollment.CompletedAt = DateTime.UtcNow;
+                    
+                    var existingCert = await _context.Certificates
+                        .FirstOrDefaultAsync(c => c.UserId == user!.Id && c.CourseId == lesson.CourseId);
+                    
+                    if (existingCert == null && enrollment.Course != null)
+                    {
+                        var certificate = new Certificate
+                        {
+                            UserId = user!.Id,
+                            CourseId = lesson.CourseId,
+                            CertificateNumber = Certificate.GenerateCertificateNumber(),
+                            StudentName = user.FullName ?? "Student",
+                            CourseName = enrollment.Course!.Title,
+                            InstructorName = enrollment.Course.Instructor?.FullName ?? "Instructor",
+                            IssuedAt = DateTime.UtcNow
+                        };
+                        _context.Certificates.Add(certificate);
+                        
+                        var notification = new Notification
+                        {
+                            UserId = user.Id,
+                            Type = NotificationType.CertificateIssued,
+                            Title = "🎉 Congratulations!",
+                            Message = $"You've completed '{enrollment.Course.Title}'! Your certificate is ready.",
+                            Link = $"/Certificate/MyCertificates"
+                        };
+                        _context.Notifications.Add(notification);
+                    }
                 }
             }
 

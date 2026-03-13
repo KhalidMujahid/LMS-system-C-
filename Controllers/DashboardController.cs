@@ -31,15 +31,27 @@ namespace LMS.Controllers
             if (roles.Contains("Instructor"))
                 return RedirectToAction("Index", "Instructor");
 
-            // Student dashboard
             var enrollments = await _context.Enrollments
                 .Include(e => e.Course)
                     .ThenInclude(c => c!.Lessons)
                 .Where(e => e.UserId == user.Id)
                 .ToListAsync();
+            
+            var certificates = await _context.Certificates
+                .Where(c => c.UserId == user.Id)
+                .ToListAsync();
+            
+            var enrolledCourseIds = enrollments.Select(e => e.CourseId).ToList();
+            var liveClasses = await _context.LiveClasses
+                .Where(l => enrolledCourseIds.Contains(l.CourseId) && l.Status == LiveClassStatus.Scheduled && l.ScheduledAt > DateTime.UtcNow)
+                .OrderBy(l => l.ScheduledAt)
+                .Take(3)
+                .ToListAsync();
 
             ViewBag.User = user;
             ViewBag.Enrollments = enrollments;
+            ViewBag.Certificates = certificates;
+            ViewBag.LiveClasses = liveClasses;
             return View(enrollments);
         }
     }

@@ -12,7 +12,6 @@ namespace LMS.Models
 
         public string FullName => $"{FirstName} {LastName}";
 
-        // Navigation
         public ICollection<Course> CoursesCreated { get; set; } = new List<Course>();
         public ICollection<Enrollment> Enrollments { get; set; } = new List<Enrollment>();
         public ICollection<QuizAttempt> QuizAttempts { get; set; } = new List<QuizAttempt>();

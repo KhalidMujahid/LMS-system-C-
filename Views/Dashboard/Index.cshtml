@@ -1,178 +1,293 @@
-@model IEnumerable<LMS.Models.Enrollment>
 @{
-    ViewData["Title"] = "My Dashboard";
-    var user = ViewBag.User as LMS.Models.ApplicationUser;
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "My Learning";
+    var enrollments = ViewBag.Enrollments as List<LMS.Models.Enrollment> ?? new List<LMS.Models.Enrollment>();
+    var completedCourses = enrollments.Count(e => e.Status == LMS.Models.EnrollmentStatus.Completed);
+    var inProgressCourses = enrollments.Count(e => e.Status == LMS.Models.EnrollmentStatus.Active);
+    var certificates = ViewBag.Certificates as List<LMS.Models.Certificate> ?? new List<LMS.Models.Certificate>();
+    var liveClasses = ViewBag.LiveClasses as List<LMS.Models.LiveClass> ?? new List<LMS.Models.LiveClass>();
 }
 
-<div class="bg-primary text-white py-5 position-relative overflow-hidden">
-    <div class="container position-relative" style="z-index: 2;">
-        <div class="row align-items-center">
-            <div class="col-lg-8">
-                <h1 class="display-5 fw-bold mb-2">
-                    Welcome back, @user?.FirstName! 👋
-                </h1>
-                <p class="lead mb-0 opacity-90">
-                    Continue your learning journey and achieve your goals
-                </p>
+<div class="space-y-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Enrolled Courses</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">@enrollments.Count</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-primary-100 flex items-center justify-center">
+                    <i class="bi bi-book text-2xl text-primary-600"></i>
+                </div>
             </div>
-            <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                <a asp-controller="Courses" asp-action="Index" class="btn btn-light btn-lg shadow">
-                    <i class="bi bi-plus-circle me-2"></i>Browse Courses
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>2 new
+                </span>
+                <span class="text-gray-400 ml-2">this month</span>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Completed</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">@completedCourses</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-green-100 flex items-center justify-center">
+                    <i class="bi bi-check-circle text-2xl text-green-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-green-600 flex items-center">
+                    <i class="bi bi-arrow-up mr-1"></i>@completedCourses%
+                </span>
+                <span class="text-gray-400 ml-2">completion rate</span>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">In Progress</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">@inProgressCourses</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-amber-100 flex items-center justify-center">
+                    <i class="bi bi-play-circle text-2xl text-amber-600"></i>
+                </div>
+            </div>
+            <div class="mt-4 flex items-center text-sm">
+                <span class="text-amber-600 flex items-center">
+                    <i class="bi bi-lightning mr-1"></i>Keep learning
+                </span>
+            </div>
+        </div>
+        
+        <div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-gray-500 text-sm">Certificates</p>
+                    <p class="text-3xl font-bold text-gray-900 mt-1">@certificates.Count</p>
+                </div>
+                <div class="w-14 h-14 rounded-xl bg-purple-100 flex items-center justify-center">
+                    <i class="bi bi-award text-2xl text-purple-600"></i>
+                </div>
+            </div>
+            <div class="mt-4">
+                <a asp-controller="Certificate" asp-action="MyCertificates" class="text-sm text-purple-600 hover:text-purple-700 flex items-center">
+                    <i class="bi bi-download mr-1"></i>View Certificates
                 </a>
             </div>
         </div>
     </div>
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 1; opacity: 0.1;">
-        <div class="position-absolute" style="top: 20%; right: 10%; animation: float 8s ease-in-out infinite;">
-            <i class="bi bi-book fs-1"></i>
-        </div>
-        <div class="position-absolute" style="bottom: 20%; right: 20%; animation: float 6s ease-in-out infinite 1s;">
-            <i class="bi bi-star-fill fs-2"></i>
-        </div>
-    </div>
-</div>
 
-<style>
-    @@keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-    }
-</style>
-
-<div class="container py-5">
-    <div class="row g-4 mb-5">
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow stats-card h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase fw-semibold">Enrolled Courses</p>
-                            <h2 class="fw-bold mb-0 display-6">@Model.Count()</h2>
-                        </div>
-                        <div class="icon-circle bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-book fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span class="badge bg-primary bg-opacity-10 text-primary">
-                            <i class="bi bi-graph-up me-1"></i>Active Learning
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow stats-card h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase fw-semibold">Completed</p>
-                            <h2 class="fw-bold mb-0 display-6">@Model.Count(e => e.Status == LMS.Models.EnrollmentStatus.Completed)</h2>
-                        </div>
-                        <div class="icon-circle bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-trophy fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span class="badge bg-success bg-opacity-10 text-success">
-                            <i class="bi bi-check-circle me-1"></i>Achievements
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-lg-4 col-md-6">
-            <div class="card border-0 shadow stats-card h-100">
-                <div class="card-body p-4">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <p class="text-muted mb-1 small text-uppercase fw-semibold">In Progress</p>
-                            <h2 class="fw-bold mb-0 display-6">@Model.Count(e => e.Status == LMS.Models.EnrollmentStatus.Active)</h2>
-                        </div>
-                        <div class="icon-circle bg-warning bg-opacity-10 text-warning">
-                            <i class="bi bi-clock-history fs-3"></i>
-                        </div>
-                    </div>
-                    <div class="mt-3">
-                        <span class="badge bg-warning bg-opacity-10 text-warning">
-                            <i class="bi bi-hourglass-split me-1"></i>Ongoing
-                        </span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    @if (enrollments.Any(e => e.Status == LMS.Models.EnrollmentStatus.Active))
+    {
         <div>
-            <h3 class="fw-bold mb-1">My Courses</h3>
-            <p class="text-muted mb-0">Track your learning progress</p>
-        </div>
-        <a asp-controller="Courses" asp-action="Index" class="btn btn-outline-primary">
-            <i class="bi bi-plus-circle me-2"></i>Browse More
-        </a>
-    </div>
-
-    @if (!Model.Any())
-    {
-        <div class="card border-0 shadow-sm">
-            <div class="card-body text-center py-5">
-                <div class="icon-circle bg-primary bg-opacity-10 text-primary mb-3 mx-auto" style="width: 80px; height: 80px;">
-                    <i class="bi bi-book fs-1"></i>
-                </div>
-                <h4 class="fw-bold mb-2">No courses yet</h4>
-                <p class="text-muted mb-4">Start your learning journey by enrolling in a course</p>
-                <a asp-controller="Courses" asp-action="Index" class="btn btn-primary btn-lg px-5">
-                    <i class="bi bi-search me-2"></i>Explore Courses
-                </a>
+            <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+                <i class="bi bi-play-circle text-primary-600 mr-2"></i>
+                Continue Learning
+            </h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                @foreach (var enrollment in enrollments.Where(e => e.Status == LMS.Models.EnrollmentStatus.Active).Take(4))
+                {
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-primary-300 hover:shadow-md transition-all group">
+                        <div class="flex">
+                            @if (!string.IsNullOrEmpty(enrollment.Course?.ThumbnailUrl))
+                            {
+                                <div class="w-32 h-32 flex-shrink-0 overflow-hidden">
+                                    <img src="@enrollment.Course.ThumbnailUrl" alt="@enrollment.Course.Title" class="w-full h-full object-cover" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="w-32 h-32 bg-gradient-to-br from-primary-500 to-primary-700 flex items-center justify-center flex-shrink-0">
+                                    <i class="bi bi-book text-4xl text-white/80"></i>
+                                </div>
+                            }
+                            <div class="flex-1 p-4">
+                                <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">@enrollment.Course?.Title</h3>
+                                <p class="text-gray-500 text-sm mt-1">@enrollment.Course?.Instructor?.FullName</p>
+                                
+                                <div class="mt-3">
+                                    <div class="flex justify-between text-xs text-gray-400 mb-1">
+                                        <span>Progress</span>
+                                        <span>@(enrollment.ProgressPercentage)%</span>
+                                    </div>
+                                    <div class="h-2 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gradient-to-r from-primary-500 to-primary-400 rounded-full transition-all duration-500" style="width: @(enrollment.ProgressPercentage)%"></div>
+                                    </div>
+                                </div>
+                                
+                                <a asp-controller="Courses" asp-action="Learn" asp-route-id="@enrollment.CourseId" class="inline-flex items-center mt-3 text-sm text-primary-600 hover:text-primary-700">
+                                    <i class="bi bi-play-fill mr-1"></i>Continue
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     }
-    else
+    
+    @if (liveClasses.Any())
     {
-        <div class="row g-4">
-            @foreach (var enrollment in Model)
-            {
-                <div class="col-lg-4 col-md-6">
-                    <div class="card h-100 border-0 shadow hover-card">
-                        <div class="card-body p-4">
-                            <div class="d-flex justify-content-between align-items-start mb-3">
-                                <span class="badge @(enrollment.Status == LMS.Models.EnrollmentStatus.Completed ? "bg-success" : "bg-primary") bg-opacity-10 @(enrollment.Status == LMS.Models.EnrollmentStatus.Completed ? "text-success" : "text-primary") px-3 py-2">
-                                    <i class="bi @(enrollment.Status == LMS.Models.EnrollmentStatus.Completed ? "bi-check-circle" : "bi-clock-history") me-1"></i>
-                                    @enrollment.Status
+        <div>
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                    <i class="bi bi-camera-video text-red-500 mr-2"></i>
+                    Upcoming Live Classes
+                </h2>
+                <a asp-controller="LiveClass" asp-action="Index" class="text-primary-600 hover:text-primary-700 text-sm flex items-center">
+                    View All <i class="bi bi-arrow-right ml-1"></i>
+                </a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var liveClass in liveClasses)
+                {
+                    <div class="bg-white rounded-xl border border-red-200 overflow-hidden hover:shadow-lg transition-all">
+                        <div class="bg-red-500 text-white px-4 py-2 text-sm font-medium flex items-center justify-between">
+                            <span>@liveClass.ScheduledAt.ToString("MMM d, yyyy")</span>
+                            <span>@liveClass.ScheduledAt.ToString("h:mm tt")</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 mb-1">@liveClass.Title</h3>
+                            <p class="text-sm text-gray-500 mb-3">@liveClass.Course?.Title</p>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm text-gray-500">
+                                    <i class="bi bi-clock mr-1"></i>@liveClass.DurationMinutes min
                                 </span>
+                                <a asp-controller="LiveClass" asp-action="Join" asp-route-id="@liveClass.Id" class="px-3 py-1.5 bg-red-500 text-white text-sm font-medium rounded-lg hover:bg-red-600 transition-colors">
+                                    Join
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+
+    <div>
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="text-xl font-bold text-gray-900 flex items-center">
+                <i class="bi bi-collection text-primary-600 mr-2"></i>
+                My Courses
+            </h2>
+            <a asp-controller="Courses" asp-action="Index" class="text-primary-600 hover:text-primary-700 text-sm flex items-center">
+                Browse More <i class="bi bi-arrow-right ml-1"></i>
+            </a>
+        </div>
+        
+        @if (enrollments.Any())
+        {
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach (var enrollment in enrollments)
+                {
+                    <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:border-gray-300 hover:shadow-lg transition-all group">
+                        @if (!string.IsNullOrEmpty(enrollment.Course?.ThumbnailUrl))
+                        {
+                            <div class="h-36 relative overflow-hidden">
+                                <img src="@enrollment.Course.ThumbnailUrl" alt="@enrollment.Course.Title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="h-36 bg-gradient-to-br from-gray-100 to-gray-200 relative overflow-hidden">
+                                <div class="absolute inset-0 bg-gradient-to-t from-gray-900/50 to-transparent"></div>
+                            </div>
+                        }
+                        <div class="p-4 relative">
+                            <div class="absolute top-3 right-3">
                                 @if (enrollment.Status == LMS.Models.EnrollmentStatus.Completed)
                                 {
-                                    <i class="bi bi-trophy-fill text-warning fs-4"></i>
+                                    <span class="px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full flex items-center">
+                                        <i class="bi bi-check-circle mr-1"></i>Completed
+                                    </span>
+                                }
+                                else if (enrollment.Status == LMS.Models.EnrollmentStatus.Active)
+                                {
+                                    <span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs font-medium rounded-full flex items-center">
+                                        <i class="bi bi-play-circle mr-1"></i>In Progress
+                                    </span>
                                 }
                             </div>
-                            
-                            <h5 class="card-title fw-bold mb-2">@enrollment.Course?.Title</h5>
-                            <p class="text-muted small mb-3">
-                                <i class="bi bi-book me-1"></i>@enrollment.Course?.LessonCount lessons
-                            </p>
-
-                            <div class="mb-3">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <small class="text-muted fw-semibold">Progress</small>
-                                    <small class="fw-bold text-primary">@enrollment.ProgressPercentage%</small>
-                                </div>
-                                <div class="progress" style="height: 10px;">
-                                    <div class="progress-bar" role="progressbar" style="width: @enrollment.ProgressPercentage%" 
-                                         aria-valuenow="@enrollment.ProgressPercentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                </div>
+                            <div class="absolute bottom-3 left-3">
+                                <i class="bi bi-book text-3xl text-gray-400"></i>
                             </div>
                         </div>
-                        <div class="card-footer bg-transparent border-0 p-4 pt-0">
-                            <a asp-controller="Courses" asp-action="Learn" asp-route-id="@enrollment.CourseId"
-                               class="btn @(enrollment.ProgressPercentage == 0 ? "btn-primary" : "btn-outline-primary") w-100">
-                                <i class="bi @(enrollment.ProgressPercentage == 0 ? "bi-play-circle" : "bi-arrow-right-circle") me-2"></i>
-                                @(enrollment.ProgressPercentage == 0 ? "Start Learning" : "Continue Learning")
+                        <div class="p-4">
+                            <h3 class="font-semibold text-gray-900 group-hover:text-primary-600 transition-colors line-clamp-1">@enrollment.Course?.Title</h3>
+                            <p class="text-gray-500 text-sm mt-1">@enrollment.Course?.Instructor?.FullName</p>
+                            
+                            <div class="flex items-center justify-between mt-4">
+                                <div class="flex items-center text-xs text-gray-400">
+                                    <i class="bi bi-clock mr-1"></i>
+                                    @enrollment.Course?.LessonCount lessons
+                                </div>
+                                <div class="flex -space-x-2">
+                                    @if (enrollment.Course?.LessonCount > 0)
+                                    {
+                                        <div class="w-6 h-6 rounded-full bg-primary-600 flex items-center justify-center text-white text-xs border-2 border-white">
+                                            @(enrollment.ProgressPercentage)%
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                            
+                            <a asp-controller="Courses" asp-action="Learn" asp-route-id="@enrollment.CourseId" class="block w-full mt-4 py-2 text-center bg-gray-100 hover:bg-primary-600 text-gray-700 hover:text-white rounded-lg transition-colors">
+                                @(enrollment.Status == LMS.Models.EnrollmentStatus.Completed ? "Review Course" : "Continue Learning")
                             </a>
                         </div>
                     </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+                <div class="w-20 h-20 mx-auto bg-gray-100 rounded-full flex items-center justify-center mb-4">
+                    <i class="bi bi-book text-3xl text-gray-400"></i>
                 </div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">No courses yet</h3>
+                <p class="text-gray-500 mb-6">Start your learning journey by enrolling in a course</p>
+                <a asp-controller="Courses" asp-action="Index" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+                    <i class="bi bi-search mr-2"></i>Browse Courses
+                </a>
+            </div>
+        }
+    </div>
+
+    <div class="bg-white rounded-xl border border-gray-200 p-6">
+        <h2 class="text-xl font-bold text-gray-900 mb-4 flex items-center">
+            <i class="bi bi-activity text-primary-600 mr-2"></i>
+            Recent Activity
+        </h2>
+        <div class="space-y-4">
+            @if (enrollments.Any())
+            {
+                @foreach (var enrollment in enrollments.OrderByDescending(e => e.EnrolledAt).Take(5))
+                {
+                    <div class="flex items-center gap-4 p-3 rounded-lg bg-gray-50">
+                        <div class="w-10 h-10 rounded-full bg-primary-100 flex items-center justify-center">
+                            <i class="bi bi-book text-primary-600"></i>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-gray-900">Enrolled in <span class="text-primary-600 font-medium">@enrollment.Course?.Title</span></p>
+                            <p class="text-gray-400 text-sm">@enrollment.EnrolledAt.ToString("MMM dd, yyyy")</p>
+                        </div>
+                        <span class="px-2 py-1 bg-green-100 text-green-700 text-xs rounded-full">
+                            Active
+                        </span>
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="text-gray-400 text-center py-4">No recent activity</p>
             }
         </div>
-    }
+    </div>
 </div>

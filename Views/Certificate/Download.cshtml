@@ -1,0 +1,79 @@
+@model LMS.Models.Certificate
+@{
+    Layout = "_DashboardLayout";
+    ViewData["Title"] = "Download Certificate";
+}
+
+<div class="max-w-4xl mx-auto">
+    <div class="mb-6 flex items-center justify-between">
+        <a asp-action="MyCertificates" class="text-primary-600 hover:text-primary-700 flex items-center">
+            <i class="bi bi-arrow-left mr-2"></i>Back to Certificates
+        </a>
+    </div>
+
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border-4 border-amber-400">
+        <div class="bg-gradient-to-r from-amber-500 via-yellow-500 to-amber-500 p-8 text-center">
+            <div class="w-24 h-24 mx-auto bg-white rounded-full flex items-center justify-center shadow-lg mb-4">
+                <i class="bi bi-award text-4xl text-amber-500"></i>
+            </div>
+            <h1 class="text-3xl font-bold text-white tracking-wider uppercase">Certificate of Completion</h1>
+            <p class="text-white/80 mt-2">This is to certify that</p>
+        </div>
+        
+        <div class="p-12 text-center">
+            <h2 class="text-4xl font-bold text-gray-900 mb-4">@Model.StudentName</h2>
+            <p class="text-xl text-gray-600 mb-8">has successfully completed the course</p>
+            <h3 class="text-2xl font-semibold text-primary-600 mb-8">@Model.CourseName</h3>
+            
+            <div class="flex justify-center items-center gap-12 mt-8">
+                <div class="text-center">
+                    <div class="w-32 border-t-2 border-gray-300 mb-2"></div>
+                    <p class="text-gray-500 text-sm">Instructor</p>
+                    <p class="font-semibold text-gray-900">@Model.InstructorName</p>
+                </div>
+                <div class="text-center">
+                    <div class="w-32 border-t-2 border-gray-300 mb-2"></div>
+                    <p class="text-gray-500 text-sm">Date Issued</p>
+                    <p class="font-semibold text-gray-900">@Model.IssuedAt.ToString("MMMM dd, yyyy")</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="bg-gray-50 p-6 text-center border-t">
+            <div class="flex justify-center items-center gap-4">
+                <i class="bi bi-mortarboard-fill text-primary-600 text-2xl"></i>
+                <span class="text-xl font-bold text-gray-800">EduLMS</span>
+            </div>
+            <p class="text-gray-400 text-sm mt-2">Certificate Number: @Model.CertificateNumber</p>
+        </div>
+    </div>
+
+    <div class="mt-8 text-center">
+        <p class="text-gray-600 mb-4">To download, simply print this page (Ctrl+P / Cmd+P) and save as PDF</p>
+        <button onclick="window.print()" class="px-6 py-3 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors">
+            <i class="bi bi-printer mr-2"></i>Print / Save as PDF
+        </button>
+    </div>
+</div>
+
+<style>
+    @@media print {
+        body * {
+            visibility: hidden;
+        }
+        .bg-white, .bg-white * {
+            visibility: visible;
+        }
+        .bg-white {
+            position: absolute;
+            left: 0;
+            top: 0;
+            width: 100%;
+            box-shadow: none;
+            border: 4px solid #f59e0b;
+        }
+        .mb-6, button {
+            display: none;
+        }
+    }
+</style>

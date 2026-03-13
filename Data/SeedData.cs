@@ -13,9 +13,23 @@ namespace LMS.Data
             var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
             var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-            await context.Database.MigrateAsync();
+            try
+            {
+                await context.Database.EnsureCreatedAsync();
+            }
+            catch
+            {
+                try
+                {
+                    await context.Database.ExecuteSqlRawAsync(@"
+                        ALTER TABLE Courses ADD COLUMN Price REAL NOT NULL DEFAULT 0;
+                    ");
+                }
+                catch
+                {
+                }
+            }
 
-            // Seed Roles
             string[] roles = { "Admin", "Instructor", "Student" };
             foreach (var role in roles)
             {
@@ -23,7 +37,6 @@ namespace LMS.Data
                     await roleManager.CreateAsync(new IdentityRole(role));
             }
 
-            // Seed Admin
             if (await userManager.FindByEmailAsync("admin@lms.com") == null)
             {
                 var admin = new ApplicationUser
@@ -39,7 +52,6 @@ namespace LMS.Data
                     await userManager.AddToRoleAsync(admin, "Admin");
             }
 
-            // Seed Instructor
             ApplicationUser? instructor = await userManager.FindByEmailAsync("instructor@lms.com");
             if (instructor == null)
             {
@@ -61,7 +73,6 @@ namespace LMS.Data
                     await userManager.AddToRoleAsync(instructor, "Instructor");
             }
 
-            // Seed Student
             ApplicationUser? student = await userManager.FindByEmailAsync("student@lms.com");
             if (student == null)
             {
@@ -78,7 +89,6 @@ namespace LMS.Data
                     await userManager.AddToRoleAsync(student, "Student");
             }
 
-            // Seed sample courses
             if (!await context.Courses.AnyAsync())
             {
                 var course1 = new Course
@@ -102,7 +112,6 @@ namespace LMS.Data
                 context.Courses.AddRange(course1, course2);
                 await context.SaveChangesAsync();
 
-                // Lessons for course1
                 var lessons = new List<Lesson>
                 {
                     new Lesson { Title = "Setting up the Development Environment", Content = "Install Visual Studio and .NET SDK. Learn how to create your first C# project.", Order = 1, DurationMinutes = 20, CourseId = course1.Id, Type = LessonType.Text },
@@ -123,7 +132,6 @@ namespace LMS.Data
                 context.Lessons.AddRange(lessons2);
                 await context.SaveChangesAsync();
 
-                // Quiz for course1
                 var quiz = new Quiz
                 {
                     Title = "C# Basics Quiz",
@@ -183,7 +191,6 @@ namespace LMS.Data
                 context.Questions.AddRange(questions);
                 await context.SaveChangesAsync();
 
-                // Enroll student in course1
                 var enrollment = new Enrollment
                 {
                     UserId = student!.Id,

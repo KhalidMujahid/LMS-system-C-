@@ -2,267 +2,240 @@
     ViewData["Title"] = "Home";
 }
 
-<!-- Hero Section -->
-<div class="bg-primary text-white py-5 position-relative overflow-hidden">
-    <div class="container py-5 position-relative" style="z-index: 2;">
-        <div class="row align-items-center">
-            <div class="col-lg-7 fade-in">
-                <div class="badge bg-white text-primary mb-3 px-3 py-2">
-                    <i class="bi bi-star-fill me-1"></i>
+<div class="bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16 lg:py-24 relative overflow-hidden">
+    <div class="absolute inset-0 z-0" style="opacity: 0.1;">
+        <div class="absolute top-10 left-10 animate-pulse">
+            <i class="bi bi-book text-5xl"></i>
+        </div>
+        <div class="absolute top-1/3 right-20 animate-pulse" style="animation-delay: 1s;">
+            <i class="bi bi-lightbulb text-4xl"></i>
+        </div>
+        <div class="absolute top-20 right-40 animate-pulse" style="animation-delay: 2s;">
+            <i class="bi bi-trophy text-5xl"></i>
+        </div>
+        <div class="absolute bottom-20 right-15 animate-pulse" style="animation-delay: 1.5s;">
+            <i class="bi bi-star-fill text-3xl"></i>
+        </div>
+    </div>
+    
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <div class="inline-flex items-center px-4 py-2 bg-white/20 rounded-full text-sm font-medium mb-6">
+                    <i class="bi bi-star-fill mr-2 text-amber-400"></i>
                     Trusted by 10,000+ learners
                 </div>
-                <h1 class="display-3 fw-bold mb-4" style="line-height: 1.1;">
+                <h1 class="text-4xl lg:text-5xl font-bold mb-6 leading-tight">
                     Learn Without Limits
                 </h1>
-                <p class="lead mb-4 fs-4" style="opacity: 0.95;">
+                <p class="text-lg lg:text-xl text-primary-100 mb-6 max-w-xl">
                     Access thousands of courses from expert instructors. Build real-world skills and advance your career with our comprehensive learning platform.
                 </p>
-                <div class="d-flex flex-wrap gap-3 mb-4">
-                    <a asp-controller="Courses" asp-action="Index" class="btn btn-light btn-lg px-5 shadow">
-                        <i class="bi bi-search me-2"></i>Explore Courses
+                <div class="flex flex-wrap gap-4 mb-6">
+                    <a asp-controller="Courses" asp-action="Index" class="inline-flex items-center px-6 py-3 bg-white text-primary-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors shadow-lg">
+                        <i class="bi bi-search mr-2"></i>Explore Courses
                     </a>
                     @if (!User.Identity!.IsAuthenticated)
                     {
-                        <a asp-controller="Account" asp-action="Register" class="btn btn-outline-light btn-lg px-5">
-                            <i class="bi bi-rocket-takeoff me-2"></i>Get Started Free
+                        <a asp-controller="Account" asp-action="Register" class="inline-flex items-center px-6 py-3 border-2 border-white text-white font-semibold rounded-lg hover:bg-white/10 transition-colors">
+                            <i class="bi bi-rocket-takeoff mr-2"></i>Get Started Free
                         </a>
                     }
                 </div>
-                <div class="d-flex align-items-center gap-4 text-white-50 small">
-                    <div>
-                        <i class="bi bi-check-circle-fill me-1"></i>
+                <div class="flex items-center gap-6 text-primary-200 text-sm">
+                    <div class="flex items-center">
+                        <i class="bi bi-check-circle-fill mr-2"></i>
                         No credit card required
                     </div>
-                    <div>
-                        <i class="bi bi-check-circle-fill me-1"></i>
+                    <div class="flex items-center">
+                        <i class="bi bi-check-circle-fill mr-2"></i>
                         Cancel anytime
                     </div>
                 </div>
             </div>
-            <div class="col-lg-5 text-center d-none d-lg-block position-relative">
-                <div class="position-relative" style="animation: float 6s ease-in-out infinite;">
-                    <i class="bi bi-mortarboard" style="font-size: 12rem; opacity: 0.15;"></i>
-                    <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center">
-                        <div class="text-center">
-                            <div class="bg-white text-primary rounded-circle d-inline-flex align-items-center justify-content-center mb-2" 
-                                 style="width: 80px; height: 80px; animation: pulse 2s ease-in-out infinite;">
-                                <i class="bi bi-play-fill fs-1"></i>
-                            </div>
+            <div class="hidden lg:block text-center relative">
+                <div class="relative inline-block">
+                    <i class="bi bi-mortarboard text-primary-900/20" style="font-size: 20rem;"></i>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div class="bg-white text-primary-600 rounded-full h-24 w-24 flex items-center justify-center shadow-xl">
+                            <i class="bi bi-play-fill text-4xl"></i>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Animated Background Elements -->
-    <div class="position-absolute top-0 start-0 w-100 h-100" style="z-index: 1; opacity: 0.1;">
-        <div class="position-absolute" style="top: 10%; left: 10%; animation: float 8s ease-in-out infinite;">
-            <i class="bi bi-book fs-1"></i>
-        </div>
-        <div class="position-absolute" style="top: 70%; left: 15%; animation: float 7s ease-in-out infinite 1s;">
-            <i class="bi bi-lightbulb fs-2"></i>
-        </div>
-        <div class="position-absolute" style="top: 20%; right: 20%; animation: float 9s ease-in-out infinite 2s;">
-            <i class="bi bi-trophy fs-1"></i>
-        </div>
-        <div class="position-absolute" style="bottom: 20%; right: 15%; animation: float 6s ease-in-out infinite 1.5s;">
-            <i class="bi bi-star-fill fs-3"></i>
-        </div>
-    </div>
 </div>
 
-<style>
-    @@keyframes float {
-        0%, 100% { transform: translateY(0px); }
-        50% { transform: translateY(-20px); }
-    }
-</style>
-
-<!-- Features Section -->
-<div class="container py-5 my-5">
-    <div class="text-center mb-5 fade-in">
-        <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">
-            <i class="bi bi-stars me-1"></i>Features
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-12">
+        <span class="inline-flex items-center px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-medium mb-4">
+            <i class="bi bi-stars mr-2"></i>Features
         </span>
-        <h2 class="display-5 fw-bold mb-3">Why Choose EduLMS?</h2>
-        <p class="text-muted fs-5 mx-auto" style="max-width: 600px;">
+        <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Why Choose EduLMS?</h2>
+        <p class="text-gray-600 text-lg max-w-2xl mx-auto">
             Everything you need to succeed in your learning journey
         </p>
     </div>
-    <div class="row g-4">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-card text-center p-4">
-                <div class="icon-circle bg-primary bg-opacity-10 text-primary mb-3 mx-auto">
-                    <i class="bi bi-play-circle fs-2"></i>
-                </div>
-                <h5 class="fw-bold mb-3">Rich Content</h5>
-                <p class="text-muted mb-0">
-                    Video lessons, readings, and interactive quizzes to maximize learning outcomes and engagement.
-                </p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
+            <div class="h-16 w-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="bi bi-play-circle text-2xl text-primary-600"></i>
             </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Rich Content</h3>
+            <p class="text-gray-600">
+                Video lessons, readings, and interactive quizzes to maximize learning outcomes and engagement.
+            </p>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-card text-center p-4">
-                <div class="icon-circle bg-success bg-opacity-10 text-success mb-3 mx-auto">
-                    <i class="bi bi-trophy fs-2"></i>
-                </div>
-                <h5 class="fw-bold mb-3">Track Progress</h5>
-                <p class="text-muted mb-0">
-                    Monitor your learning journey with detailed progress tracking and earn completion certificates.
-                </p>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
+            <div class="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="bi bi-trophy text-2xl text-green-600"></i>
             </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Track Progress</h3>
+            <p class="text-gray-600">
+                Monitor your learning journey with detailed progress tracking and earn completion certificates.
+            </p>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-card text-center p-4">
-                <div class="icon-circle bg-warning bg-opacity-10 text-warning mb-3 mx-auto">
-                    <i class="bi bi-people fs-2"></i>
-                </div>
-                <h5 class="fw-bold mb-3">Expert Instructors</h5>
-                <p class="text-muted mb-0">
-                    Learn from industry professionals with real-world experience and proven expertise.
-                </p>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
+            <div class="h-16 w-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="bi bi-people text-2xl text-amber-600"></i>
             </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Expert Instructors</h3>
+            <p class="text-gray-600">
+                Learn from industry professionals with real-world experience and proven expertise.
+            </p>
         </div>
     </div>
     
-    <!-- Additional Features Row -->
-    <div class="row g-4 mt-2">
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-card text-center p-4">
-                <div class="icon-circle bg-info bg-opacity-10 text-info mb-3 mx-auto">
-                    <i class="bi bi-clock-history fs-2"></i>
-                </div>
-                <h5 class="fw-bold mb-3">Learn at Your Pace</h5>
-                <p class="text-muted mb-0">
-                    Access courses anytime, anywhere. Learn on your schedule with lifetime access.
-                </p>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
+            <div class="h-16 w-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="bi bi-clock-history text-2xl text-blue-600"></i>
             </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Learn at Your Pace</h3>
+            <p class="text-gray-600">
+                Access courses anytime, anywhere. Learn on your schedule with lifetime access.
+            </p>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-card text-center p-4">
-                <div class="icon-circle bg-danger bg-opacity-10 text-danger mb-3 mx-auto">
-                    <i class="bi bi-patch-check fs-2"></i>
-                </div>
-                <h5 class="fw-bold mb-3">Certificates</h5>
-                <p class="text-muted mb-0">
-                    Earn recognized certificates upon course completion to showcase your achievements.
-                </p>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
+            <div class="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="bi bi-patch-check text-2xl text-red-600"></i>
             </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Certificates</h3>
+            <p class="text-gray-600">
+                Earn recognized certificates upon course completion to showcase your achievements.
+            </p>
         </div>
-        <div class="col-md-4">
-            <div class="card h-100 border-0 shadow-sm hover-card text-center p-4">
-                <div class="icon-circle bg-primary bg-opacity-10 text-primary mb-3 mx-auto">
-                    <i class="bi bi-chat-dots fs-2"></i>
-                </div>
-                <h5 class="fw-bold mb-3">Community Support</h5>
-                <p class="text-muted mb-0">
-                    Connect with fellow learners and instructors in our vibrant learning community.
-                </p>
+        <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-lg transition-shadow">
+            <div class="h-16 w-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="bi bi-chat-dots text-2xl text-purple-600"></i>
             </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-3">Community Support</h3>
+            <p class="text-gray-600">
+                Connect with fellow learners and instructors in our vibrant learning community.
+            </p>
         </div>
     </div>
 </div>
 
-<!-- Demo Accounts Section -->
 @if (!User.Identity!.IsAuthenticated)
 {
-    <div class="bg-light py-5 my-5">
-        <div class="container py-4">
-            <div class="text-center mb-5">
-                <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">
-                    <i class="bi bi-key me-1"></i>Demo Access
+    <div class="bg-gray-50 py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <span class="inline-flex items-center px-4 py-2 bg-primary-100 text-primary-700 rounded-full text-sm font-medium mb-4">
+                    <i class="bi bi-key mr-2"></i>Demo Access
                 </span>
-                <h2 class="display-5 fw-bold mb-3">Try the Demo</h2>
-                <p class="text-muted fs-5 mx-auto" style="max-width: 600px;">
+                <h2 class="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Try the Demo</h2>
+                <p class="text-gray-600 text-lg max-w-2xl mx-auto">
                     Experience the platform with different user roles. No registration required!
                 </p>
             </div>
-            <div class="row justify-content-center g-4 mb-4">
-                <div class="col-lg-4 col-md-6">
-                    <div class="card border-0 shadow hover-card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-circle bg-danger bg-opacity-10 text-danger mb-3 mx-auto">
-                                <i class="bi bi-shield-check fs-3"></i>
-                            </div>
-                            <h5 class="fw-bold mb-2">Admin</h5>
-                            <p class="text-muted small mb-3">
-                                Full platform control - manage users, courses, and system settings
-                            </p>
-                            <div class="bg-light rounded p-3 mb-3">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <small class="text-muted">Email:</small>
-                                    <code class="small">admin@lms.com</code>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <small class="text-muted">Password:</small>
-                                    <code class="small">Admin@123</code>
-                                </div>
-                            </div>
-                            <span class="badge bg-danger bg-opacity-10 text-danger">
-                                <i class="bi bi-star-fill me-1"></i>Full Access
-                            </span>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6 text-center">
+                        <div class="h-16 w-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="bi bi-shield-check text-2xl text-red-600"></i>
                         </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Admin</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Full platform control - manage users, courses, and system settings
+                        </p>
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4 text-left">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-500 text-xs">Email:</span>
+                                <code class="text-xs text-gray-700">admin@lms.com</code>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 text-xs">Password:</span>
+                                <code class="text-xs text-gray-700">Admin@123</code>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 bg-red-100 text-red-700 text-xs font-medium rounded-full">
+                            <i class="bi bi-star-fill mr-1"></i>Full Access
+                        </span>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card border-0 shadow hover-card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-circle bg-success bg-opacity-10 text-success mb-3 mx-auto">
-                                <i class="bi bi-person-workspace fs-3"></i>
-                            </div>
-                            <h5 class="fw-bold mb-2">Instructor</h5>
-                            <p class="text-muted small mb-3">
-                                Create courses, manage content, and track student progress
-                            </p>
-                            <div class="bg-light rounded p-3 mb-3">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <small class="text-muted">Email:</small>
-                                    <code class="small">instructor@lms.com</code>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <small class="text-muted">Password:</small>
-                                    <code class="small">Instructor@123</code>
-                                </div>
-                            </div>
-                            <span class="badge bg-success bg-opacity-10 text-success">
-                                <i class="bi bi-pencil-fill me-1"></i>Content Creator
-                            </span>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6 text-center">
+                        <div class="h-16 w-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="bi bi-person-workspace text-2xl text-green-600"></i>
                         </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Instructor</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Create courses, manage content, and track student progress
+                        </p>
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4 text-left">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-500 text-xs">Email:</span>
+                                <code class="text-xs text-gray-700">instructor@lms.com</code>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 text-xs">Password:</span>
+                                <code class="text-xs text-gray-700">Instructor@123</code>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-full">
+                            <i class="bi bi-pencil-fill mr-1"></i>Content Creator
+                        </span>
                     </div>
                 </div>
-                <div class="col-lg-4 col-md-6">
-                    <div class="card border-0 shadow hover-card h-100">
-                        <div class="card-body text-center p-4">
-                            <div class="icon-circle bg-primary bg-opacity-10 text-primary mb-3 mx-auto">
-                                <i class="bi bi-book fs-3"></i>
-                            </div>
-                            <h5 class="fw-bold mb-2">Student</h5>
-                            <p class="text-muted small mb-3">
-                                Enroll in courses, complete lessons, and take quizzes
-                            </p>
-                            <div class="bg-light rounded p-3 mb-3">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <small class="text-muted">Email:</small>
-                                    <code class="small">student@lms.com</code>
-                                </div>
-                                <div class="d-flex align-items-center justify-content-between">
-                                    <small class="text-muted">Password:</small>
-                                    <code class="small">Student@123</code>
-                                </div>
-                            </div>
-                            <span class="badge bg-primary bg-opacity-10 text-primary">
-                                <i class="bi bi-mortarboard-fill me-1"></i>Learner
-                            </span>
+                
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-lg transition-shadow">
+                    <div class="p-6 text-center">
+                        <div class="h-16 w-16 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <i class="bi bi-book text-2xl text-primary-600"></i>
                         </div>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Student</h3>
+                        <p class="text-gray-600 text-sm mb-4">
+                            Enroll in courses, complete lessons, and take quizzes
+                        </p>
+                        <div class="bg-gray-50 rounded-lg p-3 mb-4 text-left">
+                            <div class="flex justify-between mb-1">
+                                <span class="text-gray-500 text-xs">Email:</span>
+                                <code class="text-xs text-gray-700">student@lms.com</code>
+                            </div>
+                            <div class="flex justify-between">
+                                <span class="text-gray-500 text-xs">Password:</span>
+                                <code class="text-xs text-gray-700">Student@123</code>
+                            </div>
+                        </div>
+                        <span class="inline-flex items-center px-3 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full">
+                            <i class="bi bi-mortarboard-fill mr-1"></i>Learner
+                        </span>
                     </div>
                 </div>
             </div>
+            
             <div class="text-center">
-                <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg px-5 shadow">
-                    <i class="bi bi-box-arrow-in-right me-2"></i>Login Now
+                <a asp-controller="Account" asp-action="Login" class="inline-flex items-center px-6 py-3 bg-primary-600 text-white font-semibold rounded-lg hover:bg-primary-700 transition-colors shadow-lg">
+                    <i class="bi bi-box-arrow-in-right mr-2"></i>Login Now
                 </a>
-                <p class="text-muted small mt-3 mb-0">
-                    <i class="bi bi-info-circle me-1"></i>
+                <p class="text-gray-500 text-sm mt-4">
+                    <i class="bi bi-info-circle mr-1"></i>
                     Click any credential above to copy, then login
                 </p>
             </div>
